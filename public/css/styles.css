@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap");
+
+body {
+  margin: 0 auto;
+  font-family: "OpenSans", sans-serif;
+  font-size: 16px;
+  color: #303030;
+}
+
+header {
+  font-size: 35px;
+  font-weight: 700;
+  padding: 25px 100px;
+  border-bottom: 1px #ddd solid;
+  display: flex;
+  align-items: center;
+  color: #fe5e5e;
+  background-color: #1f2532;
+}
+
+footer {
+  clear: both;
+  margin: 70px 0 20px;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 20px 100px;
+  border-top: 1px #ddd solid;
+}
+
+.clearlist {
+  color: #468def;
+  text-decoration: underline;
+  margin-bottom: 20px;
+  clear: both;
+  display: inline-block;
+}
+
+.list {
+  font-weight: 700;
+  font-size: 30px;
+  color: #303030;
+}
+
+.cleared {
+  text-align: center;
+  margin: 20px 0 0;
+  color: #0b8885;
+}
+
+.logo-sign {
+  display: flex;
+  position: relative;
+  font-weight: 300;
+  top: -3px;
+  margin-left: 6px;
+  font-size: 24px;
+}
+
+.logo-sign .sign {
+  position: relative;
+  top: 2px;
+  margin: 0 1px;
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+select,
+textarea {
+  height: 50px;
+  width: 100%;
+  padding: 5px 15px;
+  color: #616263;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  outline: none;
+  font-size: 16px;
+}
+
+textarea {
+  height: auto;
+  padding: 20px;
+}
+
+.form {
+  margin: 40px 0;
+  float: left;
+  width: 100%;
+}
+
+.form-wrapper {
+  padding: 0 100px;
+}
+
+label {
+  display: block;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.button {
+  background-color: #468def;
+  border: 0;
+  text-transform: uppercase;
+  padding: 15px 40px;
+  border-radius: 2px;
+  color: #ffffff;
+  cursor: pointer;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+ol {
+  padding-left: 25px;
+}
+
+.list-table {
+  border: 1px #cccccc solid;
+  margin: 40px 0 0;
+  padding: 40px;
+  background: #f9f9fb;
+  border-radius: 2px;
+}
+
+ol li a {
+  font-size: 16px;
+  color: #468def;
+}

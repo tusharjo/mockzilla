@@ -1,0 +1,44 @@
+html
+   head
+    style
+        include ../public/css/styles.css   
+    body
+        .container
+            header Mock
+                span(style="font-style: italic;") ME 
+                .logo-sign
+                    .lt &lt;
+                    .sign /
+                    .gt &gt;           
+        
+            .form-wrapper
+                if clearedMessage
+                    .cleared #{clearedMessage}
+
+                if Object.keys(session).length > 0
+                    .list-table               
+                        a(href="/clear").clearlist Clear All API(s)
+                        .list API Calls List
+                        ol
+                            for item, index in session
+                                if index !== "cookie"
+                                    li
+                                        a(href=`app/`+ index, target="_blank") #{`/app/`+index}
+                .form
+                    form(action="/submit", method="post")
+                        .field
+                            label(for="jsontype") TYPE
+                            select#calltype(name="calltype")
+                                option(value="get") GET
+                                option(value="post") POST
+                            br
+                            br
+                        .field
+                            label(for="jsondata") JSON                           
+                            textarea#jsondata(name="jsondata", rows="15", required)
+                            br
+                            br
+                        button.button Submit
+
+           
+            footer &copy; Copyright 2020 
