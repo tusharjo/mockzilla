@@ -7,13 +7,13 @@ var app = express();
 
 var sess = {
   secret: "keyboard cat",
-  cookie: {},
+  cookie: { secure: true },
+  resave: true,
+  saveUninitialized: true,
 };
 
-if (app.get("env") === "production") {
-  app.set("trust proxy", 1); // trust first proxy
-  sess.cookie.secure = true; // serve secure cookies
-}
+// app.set("trust proxy", 1); // trust first proxy
+// sess.cookie.secure = true; // serve secure cookies
 
 app.use(session(sess));
 let clearedMessage = "";
