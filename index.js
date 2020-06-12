@@ -7,7 +7,7 @@ var app = express();
 
 var sess = {
   secret: "keyboard cat",
-  cookie: { secure: true },
+  cookie: { secure: false },
   resave: true,
   saveUninitialized: true,
 };
