@@ -118,6 +118,10 @@ ol {
   padding-left: 25px;
 }
 
+ol li {
+  margin: 10px 0;
+}
+
 .list-table {
   border: 1px #cccccc solid;
   margin: 40px 0 0;

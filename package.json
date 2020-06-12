@@ -1,5 +1,5 @@
 {
-  "name": "MockME",
+  "name": "mockme",
   "version": "1.0.0",
   "description": "Mini Mocking API calls application",
   "main": "index.js",
