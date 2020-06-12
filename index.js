@@ -18,6 +18,7 @@ app.get("/", function (req, res) {
   clearedMessage = "";
 });
 
+// Clear all apis
 app.get("/clear", function (req, res) {
   localSessionState = {};
   clearedMessage = "All API(s) Cleared! Thanks!";

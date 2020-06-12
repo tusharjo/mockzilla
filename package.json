@@ -1,12 +1,12 @@
 {
   "name": "MockME",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mini Mocking API calls application",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js -e js,pug"
   },
-  "author": "",
+  "author": "Tushar J",
   "license": "ISC",
   "devDependencies": {
     "body-parser": "^1.19.0",
