@@ -1,21 +1,38 @@
 const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-var session = require("express-session");
 const cors = require("cors");
-var app = express();
+const bodyParser = require("body-parser");
 
-var sess = {
-  secret: "keyboard cat",
-  cookie: { secure: false },
-  resave: true,
-  saveUninitialized: true,
-};
+const app = express();
 
-// app.set("trust proxy", 1); // trust first proxy
-// sess.cookie.secure = true; // serve secure cookies
+const session = require("express-session");
+const RedisStore = require("connect-redis")(session);
 
-app.use(session(sess));
+const redisSecretKey = "maservuniqkey";
+
+const host =
+  process.env.dev === "development"
+    ? process.env.LOCAL_REDIS_HOST
+    : "10.130.3.164";
+
+// Create redis client
+const redis = require("redis");
+const client = redis.createClient({ host: host });
+client.on("error", function (err) {
+  console.log("could not establish a connection with redis. " + err);
+});
+client.on("connect", function (err) {
+  console.log("connected to redis successfully");
+});
+
+app.use(
+  session({
+    store: new RedisStore({ client: client }),
+    secret: "some secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
 let clearedMessage = "";
 
 app.use(cors());
@@ -24,43 +41,67 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.set("view engine", "pug");
 
-app.use(function (req, res, next) {
-  if (!req.session.data) {
-    req.session.data = {};
-  }
-  next();
-});
-
-app.get("/", function (req, res) {
-  res.render("index", { session: req.session.data, clearedMessage });
-  clearedMessage = "";
-});
-
-// Clear all apis
 app.get("/clear", function (req, res) {
-  req.session.data = {};
+  req.session.destroy();
   clearedMessage = "All API(s) Cleared! Thanks!";
   res.redirect("/");
 });
 
-// Submit handler
-app.post("/submit", function (req, res) {
+app.get("/", (req, res) => {
+  const sessionKey = `sess:${req.session.id}`;
+  clearedMessage = "";
+  // console.log("dev process", process.env.dev === "development");
+
+  client.get(redisSecretKey, (err, data) => {
+    let sessionUniqueObject =
+      data &&
+      Object.entries(JSON.parse(data)).reduce((obj, x, i) => {
+        if (x[1].sessID === req.session.id) {
+          obj[[x[0]]] = x[1];
+        }
+
+        return obj;
+      }, {});
+
+    if (sessionKey === "sess:" + req.session.id) {
+      res.render("index", {
+        session: sessionUniqueObject,
+        clearedMessage,
+      });
+    } else {
+      res.render("index", {
+        session: {},
+        clearedMessage,
+      });
+    }
+  });
+});
+
+app.post("/submit", (req, res) => {
   const callName = Math.floor(Math.random() * 200) + 1;
-  req.session.data[callName] = req.body.jsondata;
+
+  let formData = { jsonData: req.body.jsondata, sessID: req.session.id };
+
+  client.get(redisSecretKey, (err, data) => {
+    client.set(
+      redisSecretKey,
+      JSON.stringify({ ...JSON.parse(data), [callName]: formData }),
+      (err, data) => {
+        // console.log("data set", data);
+      }
+    );
+  });
+
   res.redirect("/");
 });
 
-// Call router
-app.get("/app/:name", function (req, res) {
+app.get("/app/:appurl", (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  if (req.session.data[req.params.name]) {
-    res.send(req.session.data[req.params.name]);
-  } else {
-    res.send({ error: "No API call found!" });
-  }
+  client.get(redisSecretKey, (err, data) => {
+    res.send(JSON.parse(data)[req.params.appurl].jsonData);
+  });
 });
 
-app.get("*", function (req, res) {
-  res.send("Sorry, this is an invalid URL.");
+app.listen(8080, () => {
+  console.log("server running on port 8080");
 });
-app.listen(8080);

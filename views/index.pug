@@ -16,7 +16,7 @@ html
                 if clearedMessage
                     .cleared #{clearedMessage}
 
-                if Object.keys(session).length > 0
+                if session && Object.keys(session).length > 0
                     .list-table               
                         a(href="/clear").clearlist Clear All API(s)
                         .list API Calls List
