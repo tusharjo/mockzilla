@@ -81,7 +81,6 @@ app.post("/submit", (req, res) => {
   const callName = Math.floor(Math.random() * 200) + 1;
 
   let formData = { jsonData: req.body.jsondata, sessID: req.session.id };
-
   client.get(redisSecretKey, (err, data) => {
     client.set(
       redisSecretKey,
@@ -91,15 +90,22 @@ app.post("/submit", (req, res) => {
       }
     );
   });
-
   res.redirect("/");
 });
 
 app.get("/app/:appurl", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   client.get(redisSecretKey, (err, data) => {
-    res.send(JSON.parse(data)[req.params.appurl].jsonData);
+    if (JSON.parse(data)[req.params.appurl]) {
+      res.send(JSON.parse(data)[req.params.appurl].jsonData);
+    } else {
+      res.status(404).send({ error: "No API call found!" });
+    }
   });
+});
+
+app.get("*", function (req, res) {
+  res.status(404).send({ error: "Sorry, this is an invalid URL." });
 });
 
 app.listen(8080, () => {
