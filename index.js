@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+app.use(cors({ credentials: true, origin: true }));
+
 const session = require("express-session");
 const RedisStore = require("connect-redis")(session);
 
@@ -30,12 +32,12 @@ app.use(
     secret: "some secret",
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false, sameSite: "none" },
   })
 );
 
 let clearedMessage = "";
 
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
