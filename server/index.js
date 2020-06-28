@@ -95,6 +95,64 @@ app.post("/submit", (req, res) => {
   res.redirect("/");
 });
 
+app.post("/app-submit", (req, res) => {
+  const callName = Math.floor(Math.random() * 200) + 1;
+
+  let formData = {
+    jsonData: req.body.jsondata,
+  };
+  client.get(redisSecretKey, (err, data) => {
+    client.set(
+      redisSecretKey,
+      JSON.stringify({ ...JSON.parse(data), [callName]: formData }),
+      (err, data) => {
+        // console.log("data set", data);
+      }
+    );
+  });
+  res.json({ call: callName, json: req.body.jsondata });
+});
+
+app.post("/app-update", (req, res) => {
+  let formData = {
+    jsonData: req.body.jsondata,
+    callid: req.body.callid,
+  };
+  client.get(redisSecretKey, (err, data) => {
+    client.set(
+      redisSecretKey,
+      JSON.stringify({ ...JSON.parse(data), [req.body.callid]: formData }),
+      (err, data) => {
+        // console.log("data set", data);
+      }
+    );
+  });
+  res.json({ call: req.body.callid, json: req.body.jsondata });
+});
+
+app.post("/app-delete", (req, res) => {
+  let formData = {
+    callid: req.body.callid,
+  };
+  client.get(redisSecretKey, (err, data) => {
+    let parsedData = JSON.parse(data);
+    if (parsedData[req.body.callid]) {
+      delete parsedData[req.body.callid];
+
+      client.set(
+        redisSecretKey,
+        JSON.stringify({ ...parsedData }),
+        (err, data) => {
+          // console.log("data set", data);
+        }
+      );
+      res.json({ call: req.body.callid, json: req.body.jsondata });
+    } else {
+      res.json({ error: "cannot delete" });
+    }
+  });
+});
+
 app.get("/app/:appurl", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   client.get(redisSecretKey, (err, data) => {
