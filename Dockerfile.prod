@@ -1,0 +1,18 @@
+FROM node:lts-alpine
+
+WORKDIR /app/client
+COPY package*.json /app/client/
+RUN npm ci
+COPY public /app/client/public
+COPY src /app/client/src
+RUN npm run build
+COPY ./build /app/build
+RUN rm -rf /app/client
+
+WORKDIR /app
+COPY package.server.json ./package.json
+RUN npm install
+COPY server/index.js ./server/
+
+EXPOSE 8080
+CMD [ "node", "server/index.js" ]

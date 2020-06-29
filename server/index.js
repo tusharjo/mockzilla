@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -11,10 +12,7 @@ const RedisStore = require("connect-redis")(session);
 
 const redisSecretKey = "maservuniqkey";
 
-const host =
-  process.env.dev === "development"
-    ? process.env.LOCAL_REDIS_HOST
-    : "10.130.3.164";
+const host = process.env.dev === "development" ? "localhost" : "10.130.3.164";
 
 // Create redis client
 const redis = require("redis");
@@ -41,57 +39,11 @@ let clearedMessage = "";
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.set("view engine", "pug");
+app.use(express.static(path.join(__dirname, "../build")));
 
 app.get("/clear", function (req, res) {
   req.session.destroy();
   clearedMessage = "All API(s) Cleared! Thanks!";
-  res.redirect("/");
-});
-
-app.get("/", (req, res) => {
-  const sessionKey = `sess:${req.session.id}`;
-  clearedMessage = "";
-  // console.log("dev process", process.env.dev === "development");
-
-  client.get(redisSecretKey, (err, data) => {
-    let sessionUniqueObject =
-      data &&
-      Object.entries(JSON.parse(data)).reduce((obj, x, i) => {
-        if (x[1].sessID === req.session.id) {
-          obj[[x[0]]] = x[1];
-        }
-
-        return obj;
-      }, {});
-
-    if (sessionKey === "sess:" + req.session.id) {
-      res.render("index", {
-        session: sessionUniqueObject,
-        clearedMessage,
-      });
-    } else {
-      res.render("index", {
-        session: {},
-        clearedMessage,
-      });
-    }
-  });
-});
-
-app.post("/submit", (req, res) => {
-  const callName = Math.floor(Math.random() * 200) + 1;
-
-  let formData = { jsonData: req.body.jsondata, sessID: req.session.id };
-  client.get(redisSecretKey, (err, data) => {
-    client.set(
-      redisSecretKey,
-      JSON.stringify({ ...JSON.parse(data), [callName]: formData }),
-      (err, data) => {
-        // console.log("data set", data);
-      }
-    );
-  });
   res.redirect("/");
 });
 
@@ -106,7 +58,9 @@ app.post("/app-submit", (req, res) => {
       redisSecretKey,
       JSON.stringify({ ...JSON.parse(data), [callName]: formData }),
       (err, data) => {
-        // console.log("data set", data);
+        if (err) {
+          console.error("Error in submitting call");
+        }
       }
     );
   });
@@ -123,7 +77,9 @@ app.post("/app-update", (req, res) => {
       redisSecretKey,
       JSON.stringify({ ...JSON.parse(data), [req.body.callid]: formData }),
       (err, data) => {
-        // console.log("data set", data);
+        if (err) {
+          console.error("Error in updating call");
+        }
       }
     );
   });
@@ -131,9 +87,6 @@ app.post("/app-update", (req, res) => {
 });
 
 app.post("/app-delete", (req, res) => {
-  let formData = {
-    callid: req.body.callid,
-  };
   client.get(redisSecretKey, (err, data) => {
     let parsedData = JSON.parse(data);
     if (parsedData[req.body.callid]) {
@@ -143,7 +96,9 @@ app.post("/app-delete", (req, res) => {
         redisSecretKey,
         JSON.stringify({ ...parsedData }),
         (err, data) => {
-          // console.log("data set", data);
+          if (err) {
+            console.error("Error in deleting call");
+          }
         }
       );
       res.json({ call: req.body.callid, json: req.body.jsondata });
@@ -162,6 +117,10 @@ app.get("/app/:appurl", (req, res) => {
       res.status(404).send({ error: "No API call found!" });
     }
   });
+});
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
 app.get("*", function (req, res) {
