@@ -1,4 +1,11 @@
-## To run on localhost
+# MockME v1.0
+
+## What is MockME?
+
+MockME is an app where you can host your own API calls and use those calls
+wherever possible.
+
+## How to setup MockME locally:
 
 Goto /client directory and run
 
@@ -41,7 +48,7 @@ Once it connects to redis server, you can visit port 8080:
 
 Your server with react app is up and running on localhost!
 
-## For Production deployment
+## Production deployment of MockME:
 
 Run root Dockerfile, it will output image.
 
