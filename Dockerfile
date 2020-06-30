@@ -1,14 +1,17 @@
-FROM node:lts-alpine as build
+FROM node:lts-alpine
+
+WORKDIR /app/client
+COPY client/package*.json /app/client/
+RUN npm ci
+COPY client/public /app/client/public
+COPY client/src /app/client/src
+RUN npm run build
+RUN rm -rf /app/client
 
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+COPY server/package*.json ./
+RUN npm ci
+COPY server/index.js ./server/
 
-# production environment
-FROM nginx:stable-alpine
-COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
+CMD [ "node", "server/index.js" ]

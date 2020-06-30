@@ -10,19 +10,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "npm run build & nodemon -r dotenv/config server/index.js",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mv build ../build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "devDependencies": {
-    "body-parser": "^1.19.0",
-    "connect-redis": "^4.0.4",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "nodemon": "^2.0.4",
-    "redis": "^3.0.2"
   },
   "eslintConfig": {
     "extends": "react-app"
