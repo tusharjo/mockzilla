@@ -12,7 +12,10 @@ const RedisStore = require("connect-redis")(session);
 
 const redisSecretKey = "maservuniqkey";
 
-const host = process.env.dev === "development" ? "localhost" : "10.130.3.164";
+const host =
+  process.env.dev === "development"
+    ? "localhost"
+    : process.env.OPENSHIFT_MOCKME_REDIS_HOST;
 
 // Create redis client
 const redis = require("redis");
