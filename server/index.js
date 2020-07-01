@@ -14,7 +14,7 @@ const redisSecretKey = "maservuniqkey";
 
 const host =
   process.env.dev === "development"
-    ? "localhost"
+    ? "redis-server"
     : process.env.OPENSHIFT_MOCKME_REDIS_HOST;
 
 // Create redis client
