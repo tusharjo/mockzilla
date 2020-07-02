@@ -1,4 +1,6 @@
-const endpoints = { APP_URL: process.env.REACT_APP_API_URI };
+const endpoints = {
+  APP_URL: process.env.REACT_APP_API_URI ? process.env.REACT_APP_API_URI : "",
+};
 
 export default {
   ...endpoints,
