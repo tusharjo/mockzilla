@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import endpoint from "../config";
 import { Link } from "@reach/router";
+import { api } from "../api";
 
 export const Home = () => {
   const [type, setType] = useState("get");
@@ -8,32 +9,38 @@ export const Home = () => {
   const [items, setItems] = useState(
     JSON.parse(localStorage.getItem("mockmesecret")) || {}
   );
+  const mySessionKey = localStorage.getItem("mySessionKey") || "";
 
-  const handleSubmit = () => {
-    fetch(`${endpoint.APP_URL}/app-submit`, {
-      method: "POST",
-      body: JSON.stringify({
-        jsondata,
-        type,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((res) => {
-        let { call, json } = res;
-        let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
-        localStorage.setItem(
-          "mockmesecret",
-          JSON.stringify({
-            ...oldItems,
-            [call]: json,
-          })
-        );
-        setItems(JSON.parse(localStorage.getItem("mockmesecret")));
-        setJsonData("");
+  const getToken = () => {
+    if (!mySessionKey) {
+      const url = `${endpoint.APP_URL}/token`;
+      api(url, "GET").then((res) => {
+        localStorage.setItem("mySessionKey", res.token);
       });
+    }
+  };
+
+  getToken();
+
+  const handSubmit = () => {
+    const url = `${endpoint.APP_URL}/app-submit`;
+    const body = {
+      jsondata,
+      type,
+    };
+    api(url, "POST", body).then((res) => {
+      let { call, json } = res;
+      let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+      localStorage.setItem(
+        "mockmesecret",
+        JSON.stringify({
+          ...oldItems,
+          [call]: json,
+        })
+      );
+      setItems(JSON.parse(localStorage.getItem("mockmesecret")));
+      setJsonData("");
+    });
   };
 
   return (
@@ -43,8 +50,15 @@ export const Home = () => {
           <div key={index}>
             <span>
               <Link to={`edit/${call}`}>{call}</Link>
-            </span>
-            <span>{json}</span>
+            </span>{" "}
+            <span>{json}</span>{" "}
+            <a
+              href={`${endpoint.APP_URL}/app/${mySessionKey}/${call}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Call Link
+            </a>
           </div>
         ))}
       </div>
@@ -62,7 +76,7 @@ export const Home = () => {
         />
         <br />
         <br />
-        <button type="button" onClick={handleSubmit}>
+        <button type="button" onClick={() => handSubmit()}>
           Submit
         </button>
       </form>

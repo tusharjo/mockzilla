@@ -7,6 +7,12 @@ wherever possible.
 
 ## How to setup MockME locally:
 
+### docker-compose (recommended):
+
+#### `docker-compose up -d --build`
+
+### Manaul Steps:
+
 Goto /client directory and run
 
 ### `npm i`
