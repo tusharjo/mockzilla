@@ -4,13 +4,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
-
 app.use(cors({ credentials: true, origin: true }));
-
-const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-
-const redisSecretKey = "maservuniqkey";
 
 const host =
   process.env.dev === "development"
@@ -27,97 +21,86 @@ client.on("connect", function (err) {
   console.log("connected to redis successfully");
 });
 
-app.use(
-  session({
-    store: new RedisStore({ client: client }),
-    secret: "some secret",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, sameSite: "none" },
-  })
-);
-
-let clearedMessage = "";
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.get("/clear", function (req, res) {
-  req.session.destroy();
-  clearedMessage = "All API(s) Cleared! Thanks!";
-  res.redirect("/");
+function generateToken(length) {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+app.get("/token", (req, res) => {
+  let token = generateToken(20);
+  res.json({ token });
 });
 
 app.post("/app-submit", (req, res) => {
   const callName = Math.floor(Math.random() * 200) + 1;
-
-  let formData = {
-    jsonData: req.body.jsondata,
+  let mySessionKey = req.body.key;
+  let formJSONObject = {
+    [callName]: req.body.jsondata,
   };
-  client.get(redisSecretKey, (err, data) => {
-    client.set(
-      redisSecretKey,
-      JSON.stringify({ ...JSON.parse(data), [callName]: formData }),
-      (err, data) => {
-        if (err) {
-          console.error("Error in submitting call");
-        }
-      }
-    );
+  client.hgetall(mySessionKey, function (err, obj) {
+    client.hmset(mySessionKey, { ...obj, ...formJSONObject });
+    if (err) {
+      console.error("Error in submitting call");
+    }
   });
   res.json({ call: callName, json: req.body.jsondata });
 });
 
 app.post("/app-update", (req, res) => {
-  let formData = {
-    jsonData: req.body.jsondata,
-    callid: req.body.callid,
-  };
-  client.get(redisSecretKey, (err, data) => {
-    client.set(
-      redisSecretKey,
-      JSON.stringify({ ...JSON.parse(data), [req.body.callid]: formData }),
-      (err, data) => {
-        if (err) {
-          console.error("Error in updating call");
-        }
-      }
-    );
+  let mySessionKey = req.body.key;
+  let callid = req.body.callid;
+  let formJSONObject = req.body.jsondata;
+
+  client.hgetall(mySessionKey, function (err, obj) {
+    client.hmset(mySessionKey, { ...obj, [callid]: formJSONObject });
+    if (err) {
+      console.error("Error in submitting call");
+    }
   });
-  res.json({ call: req.body.callid, json: req.body.jsondata });
+
+  res.json({ call: callid, json: formJSONObject });
 });
 
 app.post("/app-delete", (req, res) => {
-  client.get(redisSecretKey, (err, data) => {
-    let parsedData = JSON.parse(data);
-    if (parsedData[req.body.callid]) {
-      delete parsedData[req.body.callid];
+  let mySessionKey = req.body.key;
+  let callid = req.body.callid;
+  let formJSONObject = req.body.jsondata;
 
-      client.set(
-        redisSecretKey,
-        JSON.stringify({ ...parsedData }),
-        (err, data) => {
-          if (err) {
-            console.error("Error in deleting call");
-          }
-        }
-      );
-      res.json({ call: req.body.callid, json: req.body.jsondata });
+  client.hgetall(mySessionKey, function (err, obj) {
+    if (obj[callid]) {
+      client.hdel(mySessionKey, callid);
+      if (err) {
+        console.error("Error in deleting call");
+      }
+      res.json({ call: callid, json: formJSONObject });
     } else {
       res.json({ error: "cannot delete" });
     }
   });
 });
 
-app.get("/app/:appurl", (req, res) => {
+app.get("/app/:key/:callid", (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  client.get(redisSecretKey, (err, data) => {
-    if (JSON.parse(data)[req.params.appurl]) {
-      res.send(JSON.parse(data)[req.params.appurl].jsonData);
+
+  client.hgetall(req.params.key, function (err, obj) {
+    if (obj) {
+      res.send(obj[req.params.callid]);
     } else {
       res.status(404).send({ error: "No API call found!" });
+    }
+    if (err) {
+      console.error("Error in getting call");
     }
   });
 });
