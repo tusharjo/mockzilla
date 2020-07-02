@@ -11,6 +11,8 @@ wherever possible.
 
 #### `docker-compose up -d --build`
 
+Once all containers bootup: You can access client from `http://localhost:3001`
+
 ### Manaul Steps:
 
 Goto /client directory and run
