@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
 
 const app = express();
 app.use(cors({ credentials: true, origin: true }));
@@ -40,6 +41,44 @@ function generateToken(length) {
 app.get("/token", (req, res) => {
   let token = generateToken(20);
   res.json({ token });
+});
+
+function isJson(str) {
+  try {
+    str;
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+app.post("/app-fetch", (req, res) => {
+  let url = req.body.fetchurl;
+  const callName = Math.floor(Math.random() * 200) + 1;
+  let mySessionKey = req.body.key;
+
+  fetch(url)
+    .then((resp) => resp.json())
+    .then((response) => {
+      try {
+        if (isJson(response)) {
+          client.hgetall(mySessionKey, function (err, obj) {
+            let formJSONObject = {
+              [callName]: JSON.stringify(response),
+            };
+            client.hmset(mySessionKey, { ...obj, ...formJSONObject });
+            if (err) {
+              console.error("Error in submitting call");
+            }
+          });
+          return res.send({ call: callName, json: response });
+        } else {
+          return res.send({ error: "Not a JSON" });
+        }
+      } catch (e) {
+        res.send({ error: "Fetch Failed!" });
+      }
+    });
 });
 
 app.post("/app-submit", (req, res) => {
