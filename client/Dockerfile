@@ -1,7 +1,7 @@
 FROM node:lts-alpine
 
 WORKDIR /client
-COPY ./package*.json /client/
+COPY ./package*.json ./
 RUN npm ci
 
 COPY . .
