@@ -14,45 +14,35 @@ import {
   Link,
   Tooltip,
 } from "@chakra-ui/core";
+import ReactJson from "react-json-view";
+import { navigate } from "@reach/router";
 
-const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
-  if (!readState) {
-    const url = `${endpoint.APP_URL}/app-update`;
-    const body = {
-      jsondata,
-      callid: appid,
-    };
-    api(url, "POST", body).then((res) => {
-      let { call, json } = res;
-      let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
-      localStorage.setItem(
-        "mockmesecret",
-        JSON.stringify({
-          ...oldItems,
-          [call]: json,
-        })
-      );
-    });
-    setReadState(true);
-    toast({
-      position: "bottom-left",
-      title: "Updated JSON",
-      description: "JSON value has been updated",
-      status: "success",
-      duration: 2000,
-      isClosable: true,
-    });
-    window.history.back();
-  } else {
-    toast({
-      position: "bottom-left",
-      title: "Invalid JSON",
-      description: "Cannot update HTML values or blank values",
-      status: "error",
-      duration: 2000,
-      isClosable: true,
-    });
-  }
+const handleUpdate = (jsondata, appid, toast) => {
+  const url = `${endpoint.APP_URL}/app-update`;
+  const body = {
+    jsondata,
+    callid: appid,
+  };
+  api(url, "POST", body).then((res) => {
+    let { call, json } = res;
+    let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+    localStorage.setItem(
+      "mockmesecret",
+      JSON.stringify({
+        ...oldItems,
+        [call]: json,
+      })
+    );
+  });
+  toast({
+    position: "bottom-left",
+    title: "Updated JSON",
+    description: "JSON value has been updated",
+    status: "success",
+    duration: 2000,
+    isClosable: true,
+  });
+  navigate("/manage");
 };
 
 const handleDelete = (appid, toast) => {
@@ -79,12 +69,12 @@ const handleDelete = (appid, toast) => {
       duration: 2000,
       isClosable: true,
     });
-    window.history.back();
+    navigate("/manage");
   });
 };
 
 export const Edit = (props) => {
-  const [readState, setReadState] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const getLocalStorage =
     JSON.parse(localStorage.getItem("mockmesecret")) || {};
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
@@ -93,6 +83,15 @@ export const Edit = (props) => {
   const toast = useToast();
 
   const [jsondata, setJsonData] = useState(getLocalStorage[props.appid] || "");
+
+  function isJson(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 
   return (
     <Box>
@@ -114,24 +113,44 @@ export const Edit = (props) => {
 
           <form>
             <FormControl mb={4}>
-              <Textarea
-                rows="10"
-                onChange={(e) => setJsonData(e.target.value)}
-                value={jsondata}
-                readOnly={readState}
-                color={`mode.${colorMode}.text`}
-                whiteSpace="pre"
-              ></Textarea>
-            </FormControl>
-
-            <Tooltip placement="bottom" hasArrow label="Edit JSON">
-              <IconButton
+              {editMode ? (
+                <ReactJson
+                  src={JSON.parse(jsondata)}
+                  theme={colorMode === "light" ? "bright:inverted" : "bright"}
+                  onEdit={({ updated_src }) =>
+                    setJsonData(JSON.stringify(updated_src))
+                  }
+                ></ReactJson>
+              ) : (
+                <Textarea
+                  minHeight="400px"
+                  onChange={(e) => setJsonData(e.target.value)}
+                  value={
+                    isJson(jsondata)
+                      ? JSON.stringify(JSON.parse(jsondata), null, 2)
+                      : jsondata
+                  }
+                  color={`mode.${colorMode}.text`}
+                  whiteSpace="pre"
+                ></Textarea>
+              )}
+            </FormControl>{" "}
+            <Text as="span" mr={3} color={`mode.${colorMode}.text`}>
+              Edit in:
+            </Text>
+            <Tooltip
+              placement="bottom"
+              hasArrow
+              label={`Edit JSON in ${editMode ? "Normal" : "Tree"} Mode`}
+            >
+              <Button
                 variantColor="teal"
-                aria-label="Call Segun"
-                icon="edit"
-                onClick={() => setReadState(!readState)}
+                rightIcon="edit"
+                onClick={() => setEditMode(!editMode)}
                 mr={5}
-              />
+              >
+                {editMode ? "Normal" : "JSON Tree"} Mode
+              </Button>
             </Tooltip>
             <Tooltip placement="bottom" hasArrow label="Delete this mock">
               <IconButton
@@ -159,15 +178,7 @@ export const Edit = (props) => {
               rightIcon="arrow-forward"
               mt={[4, 0]}
               variantColor="green"
-              onClick={() =>
-                handleUpdate(
-                  jsondata,
-                  props.appid,
-                  readState,
-                  setReadState,
-                  toast
-                )
-              }
+              onClick={() => handleUpdate(jsondata, props.appid, toast)}
             >
               Update JSON
             </Button>

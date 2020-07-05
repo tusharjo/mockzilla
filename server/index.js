@@ -45,7 +45,7 @@ app.get("/token", (req, res) => {
 
 function isJson(str) {
   try {
-    str;
+    JSON.parse(str);
   } catch (e) {
     return false;
   }
@@ -76,7 +76,7 @@ app.post("/app-fetch", (req, res) => {
           return res.status(404).send({ error: "Error in JSON" });
         }
       } catch (e) {
-        res.send({ error: "Fetch Failed!" });
+        res.status(404).send({ error: "Fetch Failed!" });
       }
     })
     .catch((e) => res.status(404).send({ error: "Error in JSON" }));

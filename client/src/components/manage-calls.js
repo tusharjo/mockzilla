@@ -70,6 +70,7 @@ export const ManageCalls = () => {
                     borderColor={colorMode === "light" ? "white" : "gray.600"}
                     rounded="lg"
                     height="200"
+                    key={index}
                   >
                     <Heading as="h6" color={`mode.${colorMode}.text`}>
                       <Link as={ReachLink} to={`/edit/${call}`}>
