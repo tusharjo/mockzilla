@@ -9,18 +9,20 @@ import {
   Textarea,
   Text,
   FormControl,
-  FormLabel,
   IconButton,
   useToast,
   Link,
   Tooltip,
 } from "@chakra-ui/core";
+import { cleanJson } from "./common/utils";
 
 const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
-  if (!readState) {
+  const jsonData = cleanJson(jsondata);
+
+  if (!readState && jsonData) {
     const url = `${endpoint.APP_URL}/app-update`;
     const body = {
-      jsondata,
+      jsondata: jsonData,
       callid: appid,
     };
     api(url, "POST", body).then((res) => {
@@ -30,7 +32,7 @@ const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
         "mockmesecret",
         JSON.stringify({
           ...oldItems,
-          [call]: json,
+          [call]: cleanJson(json),
         })
       );
     });
@@ -44,6 +46,15 @@ const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
       isClosable: true,
     });
     window.history.back();
+  } else {
+    toast({
+      position: "bottom-left",
+      title: "Invalid JSON",
+      description: "Cannot update HTML values or blank values",
+      status: "error",
+      duration: 2000,
+      isClosable: true,
+    });
   }
 };
 
@@ -88,9 +99,9 @@ export const Edit = (props) => {
 
   return (
     <Box>
-      <Box p={10}>
+      <Box p={[4, 10]}>
         <Box
-          p={10}
+          p={[4, 10]}
           bg={`mode.${colorMode}.box`}
           w="100%"
           borderWidth={colorMode === "light" ? "1px" : 0}
@@ -106,9 +117,6 @@ export const Edit = (props) => {
 
           <form>
             <FormControl mb={4}>
-              <FormLabel color={`mode.${colorMode}.text`}>
-                Edit JSON response:
-              </FormLabel>
               <Textarea
                 rows="10"
                 onChange={(e) => setJsonData(e.target.value)}
@@ -152,6 +160,7 @@ export const Edit = (props) => {
             </Tooltip>
             <Button
               rightIcon="arrow-forward"
+              mt={[4, 0]}
               variantColor="green"
               onClick={() =>
                 handleUpdate(

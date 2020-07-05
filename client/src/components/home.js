@@ -14,10 +14,11 @@ import {
   FormControl,
   FormLabel,
   Select,
-  Flex,
   Link,
   useToast,
+  ButtonGroup,
 } from "@chakra-ui/core";
+import { cleanJson } from "./common/utils";
 
 export const Home = () => {
   const [type, setType] = useState("get");
@@ -27,7 +28,7 @@ export const Home = () => {
   const { colorMode } = useColorMode();
   const [fetchJSONinput, setFetchJSON] = useState("");
 
-  const [, setItems] = useState(
+  const [items, setItems] = useState(
     JSON.parse(localStorage.getItem("mockmesecret")) || {}
   );
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
@@ -44,10 +45,11 @@ export const Home = () => {
   getToken();
 
   const fetchJSON = () => {
-    if (fetchJSONinput) {
+    const fetchJSONData = cleanJson(fetchJSONinput);
+    if (fetchJSONData) {
       const url = `${endpoint.APP_URL}/app-fetch`;
       const body = {
-        fetchurl: fetchJSONinput,
+        fetchurl: fetchJSONData,
       };
       api(url, "POST", body).then((res) => {
         let { call, json, error = "" } = res;
@@ -56,7 +58,7 @@ export const Home = () => {
           "mockmesecret",
           JSON.stringify({
             ...oldItems,
-            [call]: JSON.stringify(json),
+            [call]: JSON.stringify(cleanJson(json)),
           })
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
@@ -99,10 +101,11 @@ export const Home = () => {
   };
 
   const handSubmit = () => {
-    if (jsondata) {
+    const jsonData = cleanJson(jsondata);
+    if (jsonData) {
       const url = `${endpoint.APP_URL}/app-submit`;
       const body = {
-        jsondata,
+        jsondata: jsonData,
         type,
       };
       api(url, "POST", body).then((res) => {
@@ -112,7 +115,7 @@ export const Home = () => {
           "mockmesecret",
           JSON.stringify({
             ...oldItems,
-            [call]: json,
+            [call]: cleanJson(json),
           })
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
@@ -134,7 +137,7 @@ export const Home = () => {
       toast({
         position: "bottom-left",
         title: "Failed to create API",
-        description: "Please enter proper JSON value",
+        description: "Cannot accept HTML or blank values",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -158,12 +161,19 @@ export const Home = () => {
           </Text>
         </Heading>
 
-        <Button size="lg" variantColor="teal" mt="24px">
-          Find Out More!
-        </Button>
+        <ButtonGroup mt="24px" spacing={4}>
+          {Object.keys(items).length > 0 && (
+            <Button size="lg" variantColor="pink" as={ReachLink} to="/manage">
+              Manage My Mocks
+            </Button>
+          )}
+          <Button size="lg" variantColor="teal" mt={[5, 0]}>
+            Find Out More!
+          </Button>
+        </ButtonGroup>
       </Box>
 
-      <Flex p={10}>
+      <Box p={[4, 10]} display={["block", "flex"]}>
         <Box
           p={10}
           bg={`mode.${colorMode}.box`}
@@ -199,7 +209,6 @@ export const Home = () => {
                 value={jsondata}
                 color={`mode.${colorMode}.text`}
                 // isInvalid={!jsondata}
-                size="sm"
               ></Textarea>
             </FormControl>
 
@@ -213,8 +222,8 @@ export const Home = () => {
             </Button>
           </form>
         </Box>
-        <Divider orientation="vertical" margin="0 40px" />
-        <Box w="90%">
+        <Divider orientation="vertical" m={["20px 0px", "0px 40px"]} />
+        <Box w={["100%", "90%"]}>
           <Box
             p={10}
             bg={`mode.${colorMode}.box`}
@@ -224,7 +233,7 @@ export const Home = () => {
             overflow="hidden"
           >
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
-              Fetch from an external endpoint
+              Fetch from an external URL
             </Heading>
             <form>
               <FormControl>
@@ -247,7 +256,7 @@ export const Home = () => {
             </form>
           </Box>
         </Box>
-      </Flex>
+      </Box>
     </Box>
   );
 };

@@ -8,7 +8,6 @@ import {
   useColorMode,
   Icon,
   Link,
-  ButtonGroup,
 } from "@chakra-ui/core";
 
 export const Header = () => {
@@ -20,7 +19,7 @@ export const Header = () => {
       align="center"
       justify="space-between"
       wrap="wrap"
-      padding="1.5rem 3rem"
+      padding={["1rem", "1.5rem 3rem"]}
       bg="teal.500"
       // bg={colorMode === "light" ? "teal.500" : "gray.900"}
       color="white"
@@ -37,21 +36,24 @@ export const Header = () => {
       </Flex>
 
       <Box>
-        <ButtonGroup>
-          {Object.keys(items).length > 0 && (
-            <Button variantColor="red" as={ReachLink} to="/manage">
-              Manage My Mocks
-            </Button>
-          )}
-          <Button onClick={toggleColorMode} bg="transparent">
-            <Icon
-              name={colorMode === "light" ? "moon" : "sun"}
-              size="32px"
-              color="white"
-              style={{ cursor: "pointer" }}
-            />
+        {Object.keys(items).length > 0 && (
+          <Button
+            display={["none", "inline-flex"]}
+            variantColor="pink"
+            as={ReachLink}
+            to="/manage"
+          >
+            Manage My Mocks
           </Button>
-        </ButtonGroup>
+        )}
+        <Button onClick={toggleColorMode} bg="transparent">
+          <Icon
+            name={colorMode === "light" ? "moon" : "sun"}
+            size="32px"
+            color="white"
+            style={{ cursor: "pointer" }}
+          />
+        </Button>
       </Box>
     </Flex>
   );

@@ -12,6 +12,7 @@ import {
   Flex,
   Link,
   Icon,
+  ButtonGroup,
 } from "@chakra-ui/core";
 
 export const ManageCalls = () => {
@@ -25,9 +26,9 @@ export const ManageCalls = () => {
   return (
     <Box>
       {Object.keys(items).length > 0 ? (
-        <Box p={10}>
+        <Box p={[4, 10]}>
           <Box
-            p={10}
+            p={[4, 10]}
             bg={`mode.${colorMode}.box`}
             w="100%"
             borderWidth={colorMode === "light" ? "1px" : 0}
@@ -39,13 +40,27 @@ export const ManageCalls = () => {
               <Heading as="h3" color={`mode.${colorMode}.text`}>
                 Your API calls:
               </Heading>
-              <Button variantColor="teal" onClick={() => setShow(!show)} ml={5}>
-                {show ? "Hide" : "Show"}
-              </Button>
+              <ButtonGroup spacing={4} ml={5}>
+                <Button
+                  leftIcon="arrow-back"
+                  variantColor="teal"
+                  as={ReachLink}
+                  to="/"
+                  mb={[4, 0]}
+                >
+                  Go Back
+                </Button>
+                <Button variantColor="teal" onClick={() => setShow(!show)}>
+                  {show ? "Hide" : "Show"}
+                </Button>
+              </ButtonGroup>
             </Flex>
 
             <Collapse mt={4} isOpen={show}>
-              <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+              <Grid
+                templateColumns={["repeat(1, 1fr)", "repeat(4, 300px)"]}
+                gap={6}
+              >
                 {Object.entries(items).map(([call, json], index) => (
                   <Box
                     p={5}
