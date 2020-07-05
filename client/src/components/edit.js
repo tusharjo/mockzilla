@@ -14,15 +14,12 @@ import {
   Link,
   Tooltip,
 } from "@chakra-ui/core";
-import { cleanJson } from "./common/utils";
 
 const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
-  const jsonData = cleanJson(jsondata);
-
-  if (!readState && jsonData) {
+  if (!readState) {
     const url = `${endpoint.APP_URL}/app-update`;
     const body = {
-      jsondata: jsonData,
+      jsondata,
       callid: appid,
     };
     api(url, "POST", body).then((res) => {
@@ -32,7 +29,7 @@ const handleUpdate = (jsondata, appid, readState, setReadState, toast) => {
         "mockmesecret",
         JSON.stringify({
           ...oldItems,
-          [call]: cleanJson(json),
+          [call]: json,
         })
       );
     });

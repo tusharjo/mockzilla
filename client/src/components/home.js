@@ -18,7 +18,6 @@ import {
   useToast,
   ButtonGroup,
 } from "@chakra-ui/core";
-import { cleanJson } from "./common/utils";
 
 export const Home = () => {
   const [type, setType] = useState("get");
@@ -45,11 +44,10 @@ export const Home = () => {
   getToken();
 
   const fetchJSON = () => {
-    const fetchJSONData = cleanJson(fetchJSONinput);
-    if (fetchJSONData) {
+    if (fetchJSONinput) {
       const url = `${endpoint.APP_URL}/app-fetch`;
       const body = {
-        fetchurl: fetchJSONData,
+        fetchurl: fetchJSONinput,
       };
       api(url, "POST", body).then((res) => {
         let { call, json, error = "" } = res;
@@ -58,7 +56,7 @@ export const Home = () => {
           "mockmesecret",
           JSON.stringify({
             ...oldItems,
-            [call]: JSON.stringify(cleanJson(json)),
+            [call]: JSON.stringify(json),
           })
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
@@ -101,11 +99,10 @@ export const Home = () => {
   };
 
   const handSubmit = () => {
-    const jsonData = cleanJson(jsondata);
-    if (jsonData) {
+    if (jsondata) {
       const url = `${endpoint.APP_URL}/app-submit`;
       const body = {
-        jsondata: jsonData,
+        jsondata,
         type,
       };
       api(url, "POST", body).then((res) => {
@@ -115,7 +112,7 @@ export const Home = () => {
           "mockmesecret",
           JSON.stringify({
             ...oldItems,
-            [call]: cleanJson(json),
+            [call]: json,
           })
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));

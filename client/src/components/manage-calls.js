@@ -58,7 +58,7 @@ export const ManageCalls = () => {
 
             <Collapse mt={4} isOpen={show}>
               <Grid
-                templateColumns={["repeat(1, 1fr)", "repeat(4, 300px)"]}
+                templateColumns={["repeat(1, 1fr)", "repeat(4, 23%)"]}
                 gap={6}
               >
                 {Object.entries(items).map(([call, json], index) => (
@@ -84,6 +84,7 @@ export const ManageCalls = () => {
                           overflow: "hidden",
                           borderBottom: "1px #ddd solid",
                           paddingBottom: "5px",
+                          width: "100%",
                         }}
                       >
                         {json}
