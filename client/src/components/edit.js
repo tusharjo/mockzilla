@@ -113,7 +113,7 @@ export const Edit = (props) => {
 
           <form>
             <FormControl mb={4}>
-              {editMode ? (
+              {editMode && isJson(jsondata) ? (
                 <ReactJson
                   src={JSON.parse(jsondata)}
                   theme={colorMode === "light" ? "bright:inverted" : "bright"}
@@ -141,7 +141,9 @@ export const Edit = (props) => {
             <Tooltip
               placement="bottom"
               hasArrow
-              label={`Edit JSON in ${editMode ? "Normal" : "Tree"} Mode`}
+              label={`Edit JSON in ${
+                editMode && isJson(jsondata) ? "Normal" : "Tree"
+              } Mode`}
             >
               <Button
                 variantColor="teal"
