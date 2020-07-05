@@ -21,6 +21,7 @@ import {
 
 export const Home = () => {
   const [type, setType] = useState("get");
+  const [apiStatus, setApiStatus] = useState(false);
   const toast = useToast();
 
   const [jsondata, setJsonData] = useState("");
@@ -45,6 +46,7 @@ export const Home = () => {
 
   const fetchJSON = () => {
     if (fetchJSONinput) {
+      setApiStatus(true);
       const url = `${endpoint.APP_URL}/app-fetch`;
       const body = {
         fetchurl: fetchJSONinput,
@@ -59,6 +61,7 @@ export const Home = () => {
             [call]: JSON.stringify(json),
           })
         );
+        setApiStatus(false);
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
 
         if (error) {
@@ -73,7 +76,7 @@ export const Home = () => {
         } else {
           toast({
             position: "bottom-left",
-            title: "API created",
+            title: `API created with alias ${call}`,
             description: (
               <Link as={ReachLink} to="/manage">
                 Click here to manage your calls
@@ -100,6 +103,7 @@ export const Home = () => {
 
   const handSubmit = () => {
     if (jsondata) {
+      setApiStatus(true);
       const url = `${endpoint.APP_URL}/app-submit`;
       const body = {
         jsondata,
@@ -115,11 +119,12 @@ export const Home = () => {
             [call]: json,
           })
         );
+        setApiStatus(false);
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
         setJsonData("");
         toast({
           position: "bottom-left",
-          title: "API created",
+          title: `API created with alias ${call}`,
           description: (
             <Link as={ReachLink} to="/manage">
               Click here to manage your calls
@@ -214,6 +219,7 @@ export const Home = () => {
               mt={4}
               type="button"
               onClick={() => handSubmit()}
+              isLoading={apiStatus}
             >
               Submit
             </Button>
@@ -247,6 +253,7 @@ export const Home = () => {
                 variantColor="teal"
                 type="button"
                 onClick={() => fetchJSON()}
+                isLoading={apiStatus}
               >
                 Submit
               </Button>

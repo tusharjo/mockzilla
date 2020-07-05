@@ -61,7 +61,7 @@ app.post("/app-fetch", (req, res) => {
     .then((resp) => resp.json())
     .then((response) => {
       try {
-        if (isJson(response)) {
+        if (isJson(JSON.stringify(response))) {
           client.hgetall(mySessionKey, function (err, obj) {
             let formJSONObject = {
               [callName]: JSON.stringify(response),
