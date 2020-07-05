@@ -1,21 +1,33 @@
 import React, { useState } from "react";
 import endpoint from "../config";
-import { Link } from "@reach/router";
+import { Link as ReachLink } from "@reach/router";
 import { api } from "../api";
 import {
   Button,
-  Form,
-  Col,
-  Table,
-  Jumbotron,
-  Container,
-} from "react-bootstrap";
+  Box,
+  Heading,
+  Divider,
+  useColorMode,
+  Textarea,
+  Text,
+  Input,
+  FormControl,
+  FormLabel,
+  Select,
+  Flex,
+  Link,
+  useToast,
+} from "@chakra-ui/core";
 
 export const Home = () => {
   const [type, setType] = useState("get");
+  const toast = useToast();
+
   const [jsondata, setJsonData] = useState("");
+  const { colorMode } = useColorMode();
   const [fetchJSONinput, setFetchJSON] = useState("");
-  const [items, setItems] = useState(
+
+  const [, setItems] = useState(
     JSON.parse(localStorage.getItem("mockmesecret")) || {}
   );
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
@@ -38,7 +50,7 @@ export const Home = () => {
         fetchurl: fetchJSONinput,
       };
       api(url, "POST", body).then((res) => {
-        let { call, json } = res;
+        let { call, json, error = "" } = res;
         let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
         localStorage.setItem(
           "mockmesecret",
@@ -48,7 +60,40 @@ export const Home = () => {
           })
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
+
+        if (error) {
+          toast({
+            position: "bottom-left",
+            title: "Incorrect JSON format",
+            description: "Please enter proper JSON",
+            status: "error",
+            duration: 2000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            position: "bottom-left",
+            title: "API created",
+            description: (
+              <Link as={ReachLink} to="/manage">
+                Click here to manage your calls
+              </Link>
+            ),
+            status: "success",
+            duration: 8000,
+            isClosable: true,
+          });
+        }
         setFetchJSON("");
+      });
+    } else {
+      toast({
+        position: "bottom-left",
+        title: "Failed to fetch URL",
+        description: "Please enter proper URL",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
       });
     }
   };
@@ -72,121 +117,137 @@ export const Home = () => {
         );
         setItems(JSON.parse(localStorage.getItem("mockmesecret")));
         setJsonData("");
+        toast({
+          position: "bottom-left",
+          title: "API created",
+          description: (
+            <Link as={ReachLink} to="/manage">
+              Click here to manage your calls
+            </Link>
+          ),
+          status: "success",
+          duration: 8000,
+          isClosable: true,
+        });
+      });
+    } else {
+      toast({
+        position: "bottom-left",
+        title: "Failed to create API",
+        description: "Please enter proper JSON value",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
       });
     }
   };
 
   return (
-    <Container>
-      <Jumbotron style={{ marginTop: "100px" }}>
-        <h2 style={{ marginBottom: "20px" }}>
-          <span style={{ fontWeight: "600" }}>Create &amp; Host</span> your own
-          API call with just a click!
-        </h2>
-        <p>
-          <Button variant="success" type="button">
-            Find Out More!
-          </Button>
-        </p>
-      </Jumbotron>
+    <Box>
+      <Box
+        p={10}
+        bg={colorMode === "light" ? "blue.100" : "gray.700"}
+        w="100%"
+        align="center"
+        overflow="hidden"
+      >
+        <Heading mb={4} as="h1">
+          <Text color={`mode.${colorMode}.text`} fontWeight="400">
+            <span style={{ fontWeight: "600" }}>Mock &amp; Store</span> your own
+            API call!
+          </Text>
+        </Heading>
 
-      {Object.keys(items).length > 0 && (
-        <>
-          <h3>Your API calls:</h3>
-          <Table striped bordered hover>
-            <tr>
-              <th>Call actions</th>
-              <th>JSON preview</th>
-              <th>Call link</th>
-            </tr>
-            {Object.entries(items).map(([call, json], index) => (
-              <tr key={index}>
-                <td>
-                  <Link to={`edit/${call}`}>{call}</Link>
-                </td>{" "}
-                <td width="100">
-                  <span
-                    style={{
-                      width: "300px",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      display: "inline-block",
-                      whiteSpace: "pre",
-                    }}
-                  >
-                    {json}
-                  </span>{" "}
-                </td>
-                <td>
-                  <a
-                    href={`${endpoint.APP_URL}/app/${mySessionKey}/${call}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Link
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </Table>
-        </>
-      )}
-      <br />
-      <hr />
-      <br />
-      <h3>Create your own JSON</h3>
-      <br />
-      <Form>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridState">
-            <Form.Label>Type:</Form.Label>
-            <Form.Control
-              as="select"
-              defaultValue="GET"
-              onChange={(e) => setType(e.target.value)}
+        <Button size="lg" variantColor="teal" mt="24px">
+          Find Out More!
+        </Button>
+      </Box>
+
+      <Flex p={10}>
+        <Box
+          p={10}
+          bg={`mode.${colorMode}.box`}
+          w="100%"
+          borderWidth={colorMode === "light" ? "1px" : 0}
+          rounded="lg"
+          align="center"
+          overflow="hidden"
+        >
+          <Heading as="h2" mb={4} color={`mode.${colorMode}.text`}>
+            Create your own JSON
+          </Heading>
+
+          <form>
+            <FormControl mb={4}>
+              <FormLabel htmlFor="type" color={`mode.${colorMode}.text`}>
+                Type:
+              </FormLabel>
+              <Select
+                id="type"
+                defaultValue="GET"
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option>GET</option>
+                <option>POST</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel color={`mode.${colorMode}.text`}>JSON:</FormLabel>
+              <Textarea
+                onChange={(e) => setJsonData(e.target.value)}
+                value={jsondata}
+                color={`mode.${colorMode}.text`}
+                // isInvalid={!jsondata}
+                size="sm"
+              ></Textarea>
+            </FormControl>
+
+            <Button
+              variantColor="teal"
+              mt={4}
+              type="button"
+              onClick={() => handSubmit()}
             >
-              <option>GET</option>
-              <option>POST</option>
-            </Form.Control>
-          </Form.Group>
-        </Form.Row>
-        <Form.Group controlId="exampleForm.ControlTextarea1">
-          <Form.Label>JSON:</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows="8"
-            onChange={(e) => setJsonData(e.target.value)}
-            value={jsondata}
-            required
-          />
-        </Form.Group>
+              Submit
+            </Button>
+          </form>
+        </Box>
+        <Divider orientation="vertical" margin="0 40px" />
+        <Box w="90%">
+          <Box
+            p={10}
+            bg={`mode.${colorMode}.box`}
+            borderWidth={colorMode === "light" ? "1px" : 0}
+            rounded="lg"
+            align="center"
+            overflow="hidden"
+          >
+            <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
+              Fetch from an external endpoint
+            </Heading>
+            <form>
+              <FormControl>
+                <FormLabel color={`mode.${colorMode}.text`}>URL:</FormLabel>
+                <Input
+                  onChange={(e) => setFetchJSON(e.target.value)}
+                  color={`mode.${colorMode}.text`}
+                  value={fetchJSONinput}
+                />
+              </FormControl>
 
-        <Button variant="primary" type="button" onClick={() => handSubmit()}>
-          Submit
-        </Button>
-      </Form>
-      <br />
-      <hr />
-      <br />
-      <h3>Fetch and host from an external endpoint</h3>
-      <br />
-      <Form>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formGridState">
-            <Form.Label>URL:</Form.Label>
-            <Form.Control
-              type="text"
-              required
-              onChange={(e) => setFetchJSON(e.target.value)}
-            />
-          </Form.Group>
-        </Form.Row>
-
-        <Button variant="primary" type="button" onClick={() => fetchJSON()}>
-          Submit
-        </Button>
-      </Form>
-      <br />
-    </Container>
+              <Button
+                mt={4}
+                variantColor="teal"
+                type="button"
+                onClick={() => fetchJSON()}
+              >
+                Submit
+              </Button>
+            </form>
+          </Box>
+        </Box>
+      </Flex>
+    </Box>
   );
 };

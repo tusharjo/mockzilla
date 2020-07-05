@@ -5,5 +5,7 @@ body {
   padding: 0;
   font-family: "Montserrat", sans-serif;
   font-size: 16px;
-  margin-top: 110px;
+  &.dark-mode {
+    background: #000000;
+  }
 }

@@ -73,12 +73,13 @@ app.post("/app-fetch", (req, res) => {
           });
           return res.send({ call: callName, json: response });
         } else {
-          return res.send({ error: "Not a JSON" });
+          return res.status(404).send({ error: "Error in JSON" });
         }
       } catch (e) {
         res.send({ error: "Fetch Failed!" });
       }
-    });
+    })
+    .catch((e) => res.status(404).send({ error: "Error in JSON" }));
 });
 
 app.post("/app-submit", (req, res) => {
