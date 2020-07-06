@@ -43,15 +43,6 @@ app.get("/token", (req, res) => {
   res.json({ token });
 });
 
-function isJson(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
 app.post("/app-fetch", (req, res) => {
   let url = req.body.fetchurl;
   const callName = Math.floor(Math.random() * 200) + 1;
@@ -61,7 +52,7 @@ app.post("/app-fetch", (req, res) => {
     .then((resp) => resp.json())
     .then((response) => {
       try {
-        if (isJson(JSON.stringify(response))) {
+        if (response) {
           client.hgetall(mySessionKey, function (err, obj) {
             let formJSONObject = {
               [callName]: JSON.stringify(response),
