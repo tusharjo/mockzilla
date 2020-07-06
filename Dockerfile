@@ -1,9 +1,17 @@
-FROM node:lts-alpine as build
+FROM node:lts-alpine
+
+WORKDIR /app/client
+COPY client/package*.json /app/client/
+RUN npm ci
+COPY client/public /app/client/public
+COPY client/src /app/client/src
+RUN npm run build
+RUN rm -rf /app/client
 
 WORKDIR /app
-COPY package*.json ./
+COPY server/package*.json ./
 RUN npm ci
-COPY . .
+COPY server/index.js ./server/
 
 EXPOSE 8080
-CMD [ "node", "index.js" ]
+CMD [ "node", "server/index.js" ]

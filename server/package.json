@@ -1,12 +1,11 @@
 {
-  "name": "mockme",
+  "name": "mockme-server",
   "version": "1.0.0",
   "description": "Mini Mocking API calls application",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js -e js,pug",
-    "dev": "nodemon -r dotenv/config index.js -e js,pug",
-    "prod": "node index.js"
+    "dev": "nodemon -r dotenv/config index.js",
+    "start": "node index.js"
   },
   "author": "Tushar J",
   "license": "ISC",
@@ -16,9 +15,8 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.1",
+    "node-fetch": "^2.6.0",
     "nodemon": "^2.0.4",
-    "pug": "^3.0.0",
     "redis": "^3.0.2"
   }
 }
