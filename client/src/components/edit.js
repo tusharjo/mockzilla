@@ -120,6 +120,12 @@ export const Edit = (props) => {
                   onEdit={({ updated_src }) =>
                     setJsonData(JSON.stringify(updated_src))
                   }
+                  onDelete={({ updated_src }) =>
+                    setJsonData(JSON.stringify(updated_src))
+                  }
+                  onAdd={({ updated_src }) =>
+                    setJsonData(JSON.stringify(updated_src))
+                  }
                 ></ReactJson>
               ) : (
                 <Textarea
