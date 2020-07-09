@@ -5,8 +5,8 @@
 MockME is an app where you can mock and store your own API calls and use those calls
 wherever possible while development phase.
 
-## MockME live app:
-https://mockmeapp.herokuapp.com/{target="_blank"}
+## MockME app url:
+https://mockmeapp.herokuapp.com/
 
 ## How to setup MockME locally:
 
