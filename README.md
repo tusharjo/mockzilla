@@ -16,7 +16,7 @@ wherever possible while development phase.
 
 Once all containers bootup: You can access client from `http://localhost:3001`
 
-### Manaul Steps:
+### Manual Steps:
 
 Goto /client directory and run
 
