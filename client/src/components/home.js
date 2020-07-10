@@ -192,7 +192,7 @@ export const Home = () => {
           <form>
             <FormControl mb={4}>
               <FormLabel htmlFor="type" color={`mode.${colorMode}.text`}>
-                Type:
+                Request Type:
               </FormLabel>
               <Select
                 id="type"
@@ -205,11 +205,14 @@ export const Home = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel color={`mode.${colorMode}.text`}>JSON:</FormLabel>
+              <FormLabel color={`mode.${colorMode}.text`}>
+                Enter JSON Object:
+              </FormLabel>
               <Textarea
                 onChange={(e) => setJsonData(e.target.value)}
                 value={jsondata}
                 color={`mode.${colorMode}.text`}
+                placeholder='For example: {"ParentKey": {"key1": "value1"}'
                 // isInvalid={!jsondata}
               ></Textarea>
             </FormControl>
@@ -236,15 +239,18 @@ export const Home = () => {
             overflow="hidden"
           >
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
-              Fetch from an external URL
+              Create from an external endpoint
             </Heading>
             <form>
               <FormControl>
-                <FormLabel color={`mode.${colorMode}.text`}>URL:</FormLabel>
+                <FormLabel color={`mode.${colorMode}.text`}>
+                  Enter the URL:
+                </FormLabel>
                 <Input
                   onChange={(e) => setFetchJSON(e.target.value)}
                   color={`mode.${colorMode}.text`}
                   value={fetchJSONinput}
+                  placeholder="https://example.com/api/todo/1"
                 />
               </FormControl>
 
