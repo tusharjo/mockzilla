@@ -15,17 +15,17 @@ import {
   Tooltip,
 } from "@chakra-ui/core";
 import ReactJson from "react-json-view";
-import { navigate } from "@reach/router";
+import { navigate, RouteComponentProps } from "@reach/router";
 
-const handleUpdate = (jsondata, appid, toast) => {
+const handleUpdate = (jsondata: "", appid: number, toast: any) => {
   const url = `${endpoint.APP_URL}/app-update`;
   const body = {
     jsondata,
     callid: appid,
   };
-  api(url, "POST", body).then((res) => {
+  api(url, "POST", body).then((res: any) => {
     let { call, json } = res;
-    let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+    let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
     localStorage.setItem(
       "mockmesecret",
       JSON.stringify({
@@ -45,14 +45,14 @@ const handleUpdate = (jsondata, appid, toast) => {
   navigate("/manage");
 };
 
-const handleDelete = (appid, toast) => {
+const handleDelete = (appid: number, toast: any) => {
   const url = `${endpoint.APP_URL}/app-delete`;
   const body = {
     callid: appid,
   };
-  api(url, "POST", body).then((res) => {
+  api(url, "POST", body).then((res: any) => {
     let { call } = res;
-    let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+    let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
 
     delete oldItems[call];
     localStorage.setItem(
@@ -73,18 +73,23 @@ const handleDelete = (appid, toast) => {
   });
 };
 
-export const Edit = (props) => {
+type Props = {
+  appid: number;
+};
+
+export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
   const [editMode, setEditMode] = useState(false);
-  const getLocalStorage =
-    JSON.parse(localStorage.getItem("mockmesecret")) || {};
+  const getLocalStorage = JSON.parse(
+    localStorage.getItem("mockmesecret") || "{}"
+  );
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
 
   const { colorMode } = useColorMode();
   const toast = useToast();
 
-  const [jsondata, setJsonData] = useState(getLocalStorage[props.appid] || "");
+  const [jsondata, setJsonData] = useState(getLocalStorage[appid] || "");
 
-  function isJson(str) {
+  function isJson(str: string) {
     try {
       JSON.parse(str);
     } catch (e) {
@@ -102,7 +107,7 @@ export const Edit = (props) => {
           w="100%"
           borderWidth={colorMode === "light" ? "1px" : 0}
           rounded="lg"
-          align="center"
+          alignContent="center"
           overflow="hidden"
         >
           <Heading mb={4} as="h1">
@@ -130,7 +135,7 @@ export const Edit = (props) => {
               ) : (
                 <Textarea
                   minHeight="400px"
-                  onChange={(e) => setJsonData(e.target.value)}
+                  onChange={(e: any) => setJsonData(e.target.value)}
                   value={
                     isJson(jsondata)
                       ? JSON.stringify(JSON.parse(jsondata), null, 2)
@@ -145,6 +150,7 @@ export const Edit = (props) => {
               Edit in:
             </Text>
             <Tooltip
+              aria-label="Mode"
               placement="bottom"
               hasArrow
               label={`Edit JSON in ${
@@ -160,33 +166,46 @@ export const Edit = (props) => {
                 {editMode ? "Normal" : "JSON Tree"} Mode
               </Button>
             </Tooltip>
-            <Tooltip placement="bottom" hasArrow label="Delete this mock">
+            <Tooltip
+              aria-label="Delete"
+              placement="bottom"
+              hasArrow
+              label="Delete this mock"
+            >
               <IconButton
                 variantColor="red"
                 aria-label="Call Segun"
                 icon="delete"
-                onClick={() => handleDelete(props.appid, toast)}
+                onClick={() => handleDelete(appid, toast)}
                 mr={5}
               />
             </Tooltip>
-            <Tooltip placement="bottom" hasArrow label="Link to JSON mock">
+            <Tooltip
+              aria-label="Link"
+              placement="bottom"
+              hasArrow
+              label="Link to JSON mock"
+            >
               <IconButton
+                aria-label="Link"
                 icon="external-link"
-                href={`${endpoint.APP_URL}/app/${mySessionKey}/${props.appid}`}
                 as={Link}
-                target="_blank"
-                rel="noopener nofollow"
                 variantColor="blue"
                 mr={5}
               >
-                Call Link
+                <Link
+                  href={`${endpoint.APP_URL}/app/${mySessionKey}/${appid}`}
+                  isExternal
+                >
+                  Call Link
+                </Link>
               </IconButton>
             </Tooltip>
             <Button
               rightIcon="arrow-forward"
               mt={[4, 0]}
               variantColor="green"
-              onClick={() => handleUpdate(jsondata, props.appid, toast)}
+              onClick={() => handleUpdate(jsondata, appid, toast)}
             >
               Update JSON
             </Button>

@@ -7,12 +7,11 @@ import {
   Button,
   useColorMode,
   Icon,
-  Link,
 } from "@chakra-ui/core";
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const items = JSON.parse(localStorage.getItem("mockmesecret")) || {};
+  const items = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
   return (
     <Flex
       as="nav"
@@ -29,22 +28,17 @@ export const Header = () => {
     >
       <Flex align="center" mr={5}>
         <Heading as="h1" size="xl">
-          <Link as={ReachLink} to="/">
-            MockME &lt;/&gt;
-          </Link>
+          <ReachLink to="/">MockME &lt;/&gt;</ReachLink>
         </Heading>
       </Flex>
 
       <Box>
         {Object.keys(items).length > 0 && (
-          <Button
-            display={["none", "inline-flex"]}
-            variantColor="pink"
-            as={ReachLink}
-            to="/manage"
-          >
-            Manage My Mocks
-          </Button>
+          <Box display={["none", "inline-flex"]}>
+            <ReachLink to="/manage">
+              <Button variantColor="pink">Manage My Mocks</Button>
+            </ReachLink>
+          </Box>
         )}
         <Button onClick={toggleColorMode} bg="transparent">
           <Icon

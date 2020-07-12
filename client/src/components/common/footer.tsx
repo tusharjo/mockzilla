@@ -6,8 +6,6 @@ export const Footer = () => {
   return (
     <Box
       as="footer"
-      align="center"
-      wrap="wrap"
       padding="1rem"
       bg={`mode.${colorMode}.box`}
       justifyContent="center"

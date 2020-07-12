@@ -1,4 +1,4 @@
-export const api = (endpoint, callType, body = {}) => {
+export const api: any = (endpoint: string, callType: any, body = {}) => {
   const mySessionKey = localStorage.getItem("mySessionKey");
 
   let bodyParams = {};
@@ -18,7 +18,7 @@ export const api = (endpoint, callType, body = {}) => {
       return null;
   }
 
-  const payload = {
+  const payload: any = {
     method: callType,
   };
 

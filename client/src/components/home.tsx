@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import endpoint from "../config";
-import { Link as ReachLink } from "@reach/router";
+import { Link as ReachLink, RouteComponentProps } from "@reach/router";
 import { api } from "../api";
 import {
   Button,
@@ -14,12 +14,10 @@ import {
   FormControl,
   FormLabel,
   Select,
-  Link,
   useToast,
-  ButtonGroup,
 } from "@chakra-ui/core";
 
-export const Home = () => {
+export const Home = (_: RouteComponentProps) => {
   const [type, setType] = useState("get");
   const [apiStatus, setApiStatus] = useState(false);
   const toast = useToast();
@@ -29,14 +27,14 @@ export const Home = () => {
   const [fetchJSONinput, setFetchJSON] = useState("");
 
   const [items, setItems] = useState(
-    JSON.parse(localStorage.getItem("mockmesecret")) || {}
+    JSON.parse(localStorage.getItem("mockmesecret") || "{}")
   );
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
 
   const getToken = () => {
     if (!mySessionKey) {
       const url = `${endpoint.APP_URL}/token`;
-      api(url, "GET").then((res) => {
+      api(url, "GET").then((res: any) => {
         localStorage.setItem("mySessionKey", res.token);
       });
     }
@@ -51,9 +49,9 @@ export const Home = () => {
       const body = {
         fetchurl: fetchJSONinput,
       };
-      api(url, "POST", body).then((res) => {
+      api(url, "POST", body).then((res: any) => {
         let { call, json, error = "" } = res;
-        let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+        let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
         localStorage.setItem(
           "mockmesecret",
           JSON.stringify({
@@ -62,7 +60,7 @@ export const Home = () => {
           })
         );
         setApiStatus(false);
-        setItems(JSON.parse(localStorage.getItem("mockmesecret")));
+        setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
 
         if (error) {
           toast({
@@ -77,11 +75,7 @@ export const Home = () => {
           toast({
             position: "bottom-left",
             title: `API created with alias ${call}`,
-            description: (
-              <Link as={ReachLink} to="/manage">
-                Click here to manage your calls
-              </Link>
-            ),
+            description: "Go to Manage My Mocks to view",
             status: "success",
             duration: 8000,
             isClosable: true,
@@ -109,9 +103,9 @@ export const Home = () => {
         jsondata,
         type,
       };
-      api(url, "POST", body).then((res) => {
+      api(url, "POST", body).then((res: any) => {
         let { call, json } = res;
-        let oldItems = JSON.parse(localStorage.getItem("mockmesecret"));
+        let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
         localStorage.setItem(
           "mockmesecret",
           JSON.stringify({
@@ -120,16 +114,12 @@ export const Home = () => {
           })
         );
         setApiStatus(false);
-        setItems(JSON.parse(localStorage.getItem("mockmesecret")));
+        setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
         setJsonData("");
         toast({
           position: "bottom-left",
           title: `API created with alias ${call}`,
-          description: (
-            <Link as={ReachLink} to="/manage">
-              Click here to manage your calls
-            </Link>
-          ),
+          description: "Go to Manage My Mocks to view",
           status: "success",
           duration: 8000,
           isClosable: true,
@@ -153,26 +143,28 @@ export const Home = () => {
         p={10}
         bg={colorMode === "light" ? "blue.100" : "gray.700"}
         w="100%"
-        align="center"
+        alignContent="center"
         overflow="hidden"
       >
         <Heading mb={4} as="h1">
           <Text color={`mode.${colorMode}.text`} fontWeight="400">
-            <span style={{ fontWeight: "600" }}>Mock &amp; Store</span> your own
+            <span style={{ fontWeight: 600 }}>Mock &amp; Store</span> your own
             API call!
           </Text>
         </Heading>
 
-        <ButtonGroup mt="24px" spacing={4}>
+        <Box mt={10}>
           {Object.keys(items).length > 0 && (
-            <Button size="lg" variantColor="pink" as={ReachLink} to="/manage">
-              Manage My Mocks
-            </Button>
+            <ReachLink to="/manage">
+              <Button size="lg" variantColor="pink">
+                Manage My Mocks
+              </Button>
+            </ReachLink>
           )}
-          <Button size="lg" variantColor="teal" mt={[5, 0]}>
+          <Button size="lg" variantColor="teal" mt={[5, 0]} ml={4}>
             Find Out More!
           </Button>
-        </ButtonGroup>
+        </Box>
       </Box>
 
       <Box p={[4, 10]} display={["block", "flex"]}>
@@ -182,7 +174,7 @@ export const Home = () => {
           w="100%"
           borderWidth={colorMode === "light" ? "1px" : 0}
           rounded="lg"
-          align="center"
+          alignContent="center"
           overflow="hidden"
         >
           <Heading as="h2" mb={4} color={`mode.${colorMode}.text`}>
@@ -209,7 +201,7 @@ export const Home = () => {
                 Enter JSON Object:
               </FormLabel>
               <Textarea
-                onChange={(e) => setJsonData(e.target.value)}
+                onChange={(e: any) => setJsonData(e.target.value)}
                 value={jsondata}
                 color={`mode.${colorMode}.text`}
                 placeholder='For example: {"ParentKey": {"key1": "value1"}'
@@ -235,7 +227,7 @@ export const Home = () => {
             bg={`mode.${colorMode}.box`}
             borderWidth={colorMode === "light" ? "1px" : 0}
             rounded="lg"
-            align="center"
+            alignContent="center"
             overflow="hidden"
           >
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
@@ -247,7 +239,7 @@ export const Home = () => {
                   Enter the URL:
                 </FormLabel>
                 <Input
-                  onChange={(e) => setFetchJSON(e.target.value)}
+                  onChange={(e: any) => setFetchJSON(e.target.value)}
                   color={`mode.${colorMode}.text`}
                   value={fetchJSONinput}
                   placeholder="https://example.com/api/todo/1"
