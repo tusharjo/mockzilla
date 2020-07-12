@@ -10,7 +10,7 @@ export default function Route() {
   return (
     <Box minH={`calc(100vh - 144px)`}>
       <Router>
-        <Home path="/" />
+        <Home path={"/"} />
         <ManageCalls path="/manage" />
         <Edit path="/edit/:appid" />
         <NotFound path="*" />

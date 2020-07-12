@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import endpoint from "../config";
-import { Link as ReachLink } from "@reach/router";
+import { Link as ReachLink, RouteComponentProps } from "@reach/router";
 import {
   Button,
   Box,
@@ -15,12 +15,12 @@ import {
   ButtonGroup,
 } from "@chakra-ui/core";
 
-export const ManageCalls = () => {
+export const ManageCalls = (_: RouteComponentProps) => {
   const [show, setShow] = useState(true);
 
   const { colorMode } = useColorMode();
 
-  const items = JSON.parse(localStorage.getItem("mockmesecret")) || {};
+  const items = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
   const mySessionKey = localStorage.getItem("mySessionKey") || "";
 
   return (
@@ -33,7 +33,7 @@ export const ManageCalls = () => {
             w="100%"
             borderWidth={colorMode === "light" ? "1px" : 0}
             rounded="lg"
-            align="center"
+            alignContent="center"
             overflow="hidden"
           >
             <Flex>
@@ -41,14 +41,8 @@ export const ManageCalls = () => {
                 Your API calls:
               </Heading>
               <ButtonGroup spacing={4} ml={5}>
-                <Button
-                  leftIcon="arrow-back"
-                  variantColor="teal"
-                  as={ReachLink}
-                  to="/"
-                  mb={[4, 0]}
-                >
-                  Go Back
+                <Button leftIcon="arrow-back" variantColor="teal" mb={[4, 0]}>
+                  <ReachLink to="/">Go Back</ReachLink>
                 </Button>
                 <Button variantColor="teal" onClick={() => setShow(!show)}>
                   {show ? "Hide" : "Show"}
@@ -61,7 +55,7 @@ export const ManageCalls = () => {
                 templateColumns={["repeat(1, 1fr)", "repeat(4, 23%)"]}
                 gap={6}
               >
-                {Object.entries(items).map(([call, json], index) => (
+                {Object.entries(items).map(([call, json]: any, index) => (
                   <Box
                     p={5}
                     shadow="md"
@@ -73,9 +67,9 @@ export const ManageCalls = () => {
                     key={index}
                   >
                     <Heading as="h6" color={`mode.${colorMode}.text`}>
-                      <Link as={ReachLink} to={`/edit/${call}`}>
+                      <ReachLink to={`/edit/${call}`}>
                         Edit: {call} <Icon name="edit" size="5" />
-                      </Link>
+                      </ReachLink>
                     </Heading>
                     <Text mt={4} color={`mode.${colorMode}.text`}>
                       <span
@@ -119,15 +113,15 @@ export const ManageCalls = () => {
             w="100%"
             borderWidth={colorMode === "light" ? "1px" : 0}
             rounded="lg"
-            align="center"
+            alignContent="center"
             overflow="hidden"
           >
             <Heading color={`mode.${colorMode}.text`} mb={10}>
               No Mocks found
             </Heading>
 
-            <Button as={ReachLink} to="/" variantColor="blue">
-              Create your first mock here!
+            <Button variantColor="blue">
+              <ReachLink to="/">Create your first mock here!</ReachLink>
             </Button>
           </Box>
         </Box>
