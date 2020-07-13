@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 app.use(cors({ credentials: true, origin: true }));
@@ -27,20 +28,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "../build")));
 
-function generateToken(length) {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 app.get("/token", (req, res) => {
-  let token = generateToken(20);
-  res.json({ token });
+  res.json({ token: uuidv4() });
 });
 
 app.post("/app-fetch", (req, res) => {
