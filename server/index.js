@@ -36,22 +36,31 @@ app.post("/app-fetch", (req, res) => {
   let url = req.body.fetchurl;
   const callName = Math.floor(Math.random() * 200) + 1;
   let mySessionKey = req.body.key;
+  let statusCode;
 
   fetch(url)
-    .then((resp) => resp.json())
+    .then((resp) => {
+      statusCode = resp.status;
+      return resp.json();
+    })
     .then((response) => {
       try {
         if (response) {
           client.hgetall(mySessionKey, function (err, obj) {
             let formJSONObject = {
               [callName]: JSON.stringify(response),
+              [mySessionKey + "-" + callName + "-httpStatus"]: statusCode,
             };
             client.hmset(mySessionKey, { ...obj, ...formJSONObject });
             if (err) {
               console.error("Error in submitting call");
             }
           });
-          return res.send({ call: callName, json: response });
+          return res.send({
+            call: callName,
+            json: response,
+            status: statusCode,
+          });
         } else {
           return res.status(404).send({ error: "Error in JSON" });
         }
@@ -67,6 +76,7 @@ app.post("/app-submit", (req, res) => {
   let mySessionKey = req.body.key;
   let formJSONObject = {
     [callName]: req.body.jsondata,
+    [mySessionKey + "-" + callName + "-httpStatus"]: req.body.httpStatus,
   };
   client.hgetall(mySessionKey, function (err, obj) {
     client.hmset(mySessionKey, { ...obj, ...formJSONObject });
@@ -74,7 +84,11 @@ app.post("/app-submit", (req, res) => {
       console.error("Error in submitting call");
     }
   });
-  res.json({ call: callName, json: req.body.jsondata });
+  res.json({
+    call: callName,
+    json: req.body.jsondata,
+    status: req.body.httpStatus,
+  });
 });
 
 app.post("/app-update", (req, res) => {
@@ -100,6 +114,7 @@ app.post("/app-delete", (req, res) => {
   client.hgetall(mySessionKey, function (err, obj) {
     if (obj[callid]) {
       client.hdel(mySessionKey, callid);
+      client.hdel(mySessionKey, mySessionKey + "-" + callid + "-httpStatus");
       if (err) {
         console.error("Error in deleting call");
       }
@@ -112,16 +127,24 @@ app.post("/app-delete", (req, res) => {
 
 app.get("/app/:key/:callid", (req, res) => {
   res.setHeader("Content-Type", "application/json");
-
-  client.hgetall(req.params.key, function (err, obj) {
-    if (obj) {
-      res.send(obj[req.params.callid]);
-    } else {
-      res.status(404).send({ error: "No API call found!" });
-    }
-    if (err) {
-      console.error("Error in getting call");
-    }
+  client.hget(req.params.key, req.params.callid, function (err, obj) {
+    client.hget(
+      req.params.key,
+      req.params.key + "-" + req.params.callid + "-httpStatus",
+      function (err2, httpStatusCode) {
+        try {
+          if (httpStatusCode) {
+            res.status(httpStatusCode).send(obj);
+          } else if (obj) {
+            res.send(obj);
+          } else {
+            res.status(404).send({ error: "No API call found!" });
+          }
+        } catch (e) {
+          res.status(404).send({ error: "No API call found!" });
+        }
+      }
+    );
   });
 });
 

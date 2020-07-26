@@ -13,12 +13,13 @@ import {
   Input,
   FormControl,
   FormLabel,
-  Select,
   useToast,
+  Link
 } from "@chakra-ui/core";
+import SelectHttpStatusCode from "./dropdown-http"
 
 export const Home = (_: RouteComponentProps) => {
-  const [type, setType] = useState("get");
+  const [httpStatus, setHttpStatus] = useState("200");
   const [apiStatus, setApiStatus] = useState(false);
   const toast = useToast();
 
@@ -50,18 +51,8 @@ export const Home = (_: RouteComponentProps) => {
         fetchurl: fetchJSONinput,
       };
       api(url, "POST", body).then((res: any) => {
-        let { call, json, error = "" } = res;
-        let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-        localStorage.setItem(
-          "mockmesecret",
-          JSON.stringify({
-            ...oldItems,
-            [call]: JSON.stringify(json),
-          })
-        );
+        let { call, json, status, error = "" } = res;
         setApiStatus(false);
-        setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
-
         if (error) {
           toast({
             position: "bottom-left",
@@ -72,10 +63,19 @@ export const Home = (_: RouteComponentProps) => {
             isClosable: true,
           });
         } else {
+          let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
+          localStorage.setItem(
+            "mockmesecret",
+            JSON.stringify({
+              ...oldItems,
+              [call]: { ...oldItems[call], httpStatus: status, json: JSON.stringify(json) },
+            })
+          );
+          setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
           toast({
             position: "bottom-left",
             title: `API created with alias ${call}`,
-            description: "Go to Manage My Mocks to view",
+            description: <Link><ReachLink to="/manage">Click here to manage your calls</ReachLink></Link> as any,
             status: "success",
             duration: 8000,
             isClosable: true,
@@ -101,7 +101,7 @@ export const Home = (_: RouteComponentProps) => {
       const url = `${endpoint.APP_URL}/app-submit`;
       const body = {
         jsondata,
-        type,
+        httpStatus
       };
       api(url, "POST", body).then((res: any) => {
         let { call, json } = res;
@@ -110,7 +110,7 @@ export const Home = (_: RouteComponentProps) => {
           "mockmesecret",
           JSON.stringify({
             ...oldItems,
-            [call]: json,
+            [call]: { httpStatus, json },
           })
         );
         setApiStatus(false);
@@ -119,7 +119,7 @@ export const Home = (_: RouteComponentProps) => {
         toast({
           position: "bottom-left",
           title: `API created with alias ${call}`,
-          description: "Go to Manage My Mocks to view",
+          description: <Link><ReachLink to="/manage">Click here to manage your calls</ReachLink></Link> as any,
           status: "success",
           duration: 8000,
           isClosable: true,
@@ -184,31 +184,22 @@ export const Home = (_: RouteComponentProps) => {
           <form>
             <FormControl mb={4}>
               <FormLabel htmlFor="type" color={`mode.${colorMode}.text`}>
-                Request Type:
+                HTTP Status:
               </FormLabel>
-              <Select
-                id="type"
-                defaultValue="GET"
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option>GET</option>
-                <option>POST</option>
-              </Select>
+              <SelectHttpStatusCode setHttpStatus={setHttpStatus} />
             </FormControl>
 
             <FormControl>
               <FormLabel color={`mode.${colorMode}.text`}>
-                Enter JSON Object:
+                JSON Response Body:
               </FormLabel>
               <Textarea
                 onChange={(e: any) => setJsonData(e.target.value)}
                 value={jsondata}
                 color={`mode.${colorMode}.text`}
                 placeholder='For example: {"ParentKey": {"key1": "value1"}'
-                // isInvalid={!jsondata}
               ></Textarea>
             </FormControl>
-
             <Button
               variantColor="teal"
               mt={4}
@@ -231,7 +222,7 @@ export const Home = (_: RouteComponentProps) => {
             overflow="hidden"
           >
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
-              Create from an external endpoint
+              Create JSON from an external endpoint
             </Heading>
             <form>
               <FormControl>

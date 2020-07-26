@@ -20,15 +20,14 @@ export const Header = () => {
       wrap="wrap"
       padding={["1rem", "1.5rem 3rem"]}
       bg="teal.500"
-      // bg={colorMode === "light" ? "teal.500" : "gray.900"}
       color="white"
       position="sticky"
       top={0}
       zIndex={1}
     >
       <Flex align="center" mr={5}>
-        <Heading as="h1" size="xl">
-          <ReachLink to="/">MockME &lt;/&gt;</ReachLink>
+        <Heading as="h1" size="xl" position="relative" ml="10px">
+          <ReachLink to="/"><span style={{ fontWeight: "300", marginRight: "8px", position: "absolute", top: "-10px", fontSize: "48px", left: "-20px" } as any}>&#123;</span >MockME<span style={{ fontWeight: "300", marginLeft: "8px", position: "absolute", top: "-10px", fontSize: "48px", right: "-20px" } as any}>&#125;</span></ReachLink>
         </Heading>
       </Flex>
 

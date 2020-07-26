@@ -55,7 +55,7 @@ export const ManageCalls = (_: RouteComponentProps) => {
                 templateColumns={["repeat(1, 1fr)", "repeat(4, 23%)"]}
                 gap={6}
               >
-                {Object.entries(items).map(([call, json]: any, index) => (
+                {Object.entries(items).map(([call, { httpStatus, json }]: any, index) => (
                   <Box
                     p={5}
                     shadow="md"
@@ -85,14 +85,22 @@ export const ManageCalls = (_: RouteComponentProps) => {
                         {json}
                       </span>{" "}
                     </Text>
-                    <Text color={`mode.${colorMode}.text`}>
-                      <Link
-                        href={`${endpoint.APP_URL}/app/${mySessionKey}/${call}`}
-                        isExternal
-                      >
-                        Call Link <Icon name="external-link" size="4" />
-                      </Link>
-                    </Text>
+                    <Box as={Flex} alignItems="center" mt={2} justifyContent="space-between">
+                      <Box as={Flex} alignItems="center" >
+                        <Icon name="info" size="14px" color="green.400" mr={1} />
+                        <Text fontSize="14px" color={`mode.${colorMode}.text`} mr={1}>HTTP Status:</Text>
+                        <Text color={`mode.${colorMode}.text`} fontWeight={600} fontSize="14px">{httpStatus}</Text>
+                      </Box>
+
+                      <Text color={`mode.${colorMode}.text`} fontSize="14px">
+                        <Link
+                          href={`${endpoint.APP_URL}/app/${mySessionKey}/${call}`}
+                          isExternal
+                        >
+                          Call Link <Icon name="external-link" size="4" />
+                        </Link>
+                      </Text>
+                    </Box>
                   </Box>
                 ))}
               </Grid>
@@ -100,32 +108,32 @@ export const ManageCalls = (_: RouteComponentProps) => {
           </Box>
         </Box>
       ) : (
-        <Box
-          p={10}
-          as={Flex}
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-        >
           <Box
             p={10}
-            bg={`mode.${colorMode}.box`}
-            w="100%"
-            borderWidth={colorMode === "light" ? "1px" : 0}
-            rounded="lg"
-            alignContent="center"
-            overflow="hidden"
+            as={Flex}
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
           >
-            <Heading color={`mode.${colorMode}.text`} mb={10}>
-              No Mocks found
+            <Box
+              p={10}
+              bg={`mode.${colorMode}.box`}
+              w="100%"
+              borderWidth={colorMode === "light" ? "1px" : 0}
+              rounded="lg"
+              alignContent="center"
+              overflow="hidden"
+            >
+              <Heading color={`mode.${colorMode}.text`} mb={10}>
+                No Mocks found
             </Heading>
 
-            <Button variantColor="blue">
-              <ReachLink to="/">Create your first mock here!</ReachLink>
-            </Button>
+              <Button variantColor="blue">
+                <ReachLink to="/">Create your first mock here!</ReachLink>
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
     </Box>
   );
 };

@@ -13,6 +13,8 @@ import {
   useToast,
   Link,
   Tooltip,
+  Flex,
+  Icon
 } from "@chakra-ui/core";
 import ReactJson from "react-json-view";
 import { navigate, RouteComponentProps } from "@reach/router";
@@ -30,7 +32,7 @@ const handleUpdate = (jsondata: "", appid: number, toast: any) => {
       "mockmesecret",
       JSON.stringify({
         ...oldItems,
-        [call]: json,
+        [call]: { ...oldItems[call], json },
       })
     );
   });
@@ -86,9 +88,8 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
 
   const { colorMode } = useColorMode();
   const toast = useToast();
-
-  const [jsondata, setJsonData] = useState(getLocalStorage[appid] || "");
-
+  const [jsondata, setJsonData] = useState(getLocalStorage[appid].json || "");
+  const httpStatus = getLocalStorage[appid].httpStatus || "";
   function isJson(str: string) {
     try {
       JSON.parse(str);
@@ -110,13 +111,18 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
           alignContent="center"
           overflow="hidden"
         >
-          <Heading mb={4} as="h1">
+          <Heading mb={5} as="h1">
             <Text color={`mode.${colorMode}.text`} fontWeight="400">
-              Edit JSON response:
+              Edit JSON response of {appid}:
             </Text>
           </Heading>
 
           <form>
+            <FormControl mb={4} as={Flex} alignItems="center">
+              <Icon name="info" size="16px" color="green.400" mr={2} />
+              <Text fontSize="16px" color={`mode.${colorMode}.text`} mr={2}>HTTP Status:</Text>
+              <Text color={`mode.${colorMode}.text`} fontWeight={600} fontSize="16px">{httpStatus}</Text>
+            </FormControl>
             <FormControl mb={4}>
               {editMode && isJson(jsondata) ? (
                 <ReactJson
@@ -133,18 +139,18 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
                   }
                 ></ReactJson>
               ) : (
-                <Textarea
-                  minHeight="400px"
-                  onChange={(e: any) => setJsonData(e.target.value)}
-                  value={
-                    isJson(jsondata)
-                      ? JSON.stringify(JSON.parse(jsondata), null, 2)
-                      : jsondata
-                  }
-                  color={`mode.${colorMode}.text`}
-                  whiteSpace="pre"
-                ></Textarea>
-              )}
+                  <Textarea
+                    minHeight="400px"
+                    onChange={(e: any) => setJsonData(e.target.value)}
+                    value={
+                      isJson(jsondata)
+                        ? JSON.stringify(JSON.parse(jsondata), null, 2)
+                        : jsondata
+                    }
+                    color={`mode.${colorMode}.text`}
+                    whiteSpace="pre"
+                  ></Textarea>
+                )}
             </FormControl>{" "}
             <Text as="span" mr={3} color={`mode.${colorMode}.text`}>
               Edit in:
@@ -155,7 +161,7 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               hasArrow
               label={`Edit JSON in ${
                 editMode && isJson(jsondata) ? "Normal" : "Tree"
-              } Mode`}
+                } Mode`}
             >
               <Button
                 variantColor="teal"
@@ -186,20 +192,17 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               hasArrow
               label="Link to JSON mock"
             >
-              <IconButton
-                aria-label="Link"
-                icon="external-link"
-                as={Link}
-                variantColor="blue"
-                mr={5}
+              <Link
+                href={`${endpoint.APP_URL}/app/${mySessionKey}/${appid}`}
+                isExternal
               >
-                <Link
-                  href={`${endpoint.APP_URL}/app/${mySessionKey}/${appid}`}
-                  isExternal
-                >
-                  Call Link
-                </Link>
-              </IconButton>
+                <IconButton
+                  aria-label="Link"
+                  icon="external-link"
+                  variantColor="blue"
+                  mr={5}
+                />
+              </Link>
             </Tooltip>
             <Button
               rightIcon="arrow-forward"
