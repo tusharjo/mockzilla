@@ -1,6 +1,7 @@
 version: "3.7"
 services:
   client:
+    container_name: mockme_client
     build: ./client
     expose:
       - 3001
@@ -11,6 +12,7 @@ services:
       - ./client/node_modules:/client/node_modules
     stdin_open: true
   server:
+    container_name: mockme_server
     build: ./server
     ports:
       - "8080:8080"
@@ -18,6 +20,7 @@ services:
       - ./server:/server
       - ./server/node_modules:/server/node_modules
   redis-server:
+    container_name: mockme_redis
     image: redis
     command: redis-server
     volumes:
