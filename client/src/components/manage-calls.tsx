@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import endpoint from "../config";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
+import { StorageContext } from "./common/localStorageContext";
 import {
   Button,
   Box,
@@ -17,15 +18,11 @@ import {
 
 export const ManageCalls = (_: RouteComponentProps) => {
   const [show, setShow] = useState(true);
-
+  const { apiStore, mockmeSessionKey } = useContext(StorageContext);
   const { colorMode } = useColorMode();
-
-  const items = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-  const mySessionKey = localStorage.getItem("mySessionKey") || "";
-
   return (
     <Box>
-      {Object.keys(items).length > 0 ? (
+      {Object.keys(apiStore).length > 0 ? (
         <Box p={[4, 10]}>
           <Box
             p={[4, 10]}
@@ -55,7 +52,7 @@ export const ManageCalls = (_: RouteComponentProps) => {
                 templateColumns={["repeat(1, 1fr)", "repeat(4, 23%)"]}
                 gap={6}
               >
-                {Object.entries(items).map(([call, { httpStatus, json }]: any, index) => (
+                {Object.entries(apiStore).map(([call, { httpStatus, json }]: any, index) => (
                   <Box
                     p={5}
                     shadow="md"
@@ -94,7 +91,7 @@ export const ManageCalls = (_: RouteComponentProps) => {
 
                       <Text color={`mode.${colorMode}.text`} fontSize="14px">
                         <Link
-                          href={`${endpoint.APP_URL}/app/${mySessionKey}/${call}`}
+                          href={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${call}`}
                           isExternal
                         >
                           Call Link <Icon name="external-link" size="4" />

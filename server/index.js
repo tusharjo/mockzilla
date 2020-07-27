@@ -19,7 +19,7 @@ const client = redis.createClient({ host: host });
 client.on("error", function (err) {
   console.log("could not establish a connection with redis. " + err);
 });
-client.on("connect", function (err) {
+client.on("connect", function () {
   console.log("connected to redis successfully");
 });
 
@@ -68,7 +68,7 @@ app.post("/app-fetch", (req, res) => {
         res.status(404).send({ error: "Fetch Failed!" });
       }
     })
-    .catch((e) => res.status(404).send({ error: "Error in JSON" }));
+    .catch(() => res.status(404).send({ error: "Error in JSON" }));
 });
 
 app.post("/app-submit", (req, res) => {
@@ -109,20 +109,9 @@ app.post("/app-update", (req, res) => {
 app.post("/app-delete", (req, res) => {
   let mySessionKey = req.body.key;
   let callid = req.body.callid;
-  let formJSONObject = req.body.jsondata;
-
-  client.hgetall(mySessionKey, function (err, obj) {
-    if (obj[callid]) {
-      client.hdel(mySessionKey, callid);
-      client.hdel(mySessionKey, mySessionKey + "-" + callid + "-httpStatus");
-      if (err) {
-        console.error("Error in deleting call");
-      }
-      res.json({ call: callid, json: formJSONObject });
-    } else {
-      res.json({ error: "cannot delete" });
-    }
-  });
+  client.hdel(mySessionKey, callid);
+  client.hdel(mySessionKey, mySessionKey + "-" + callid + "-httpStatus");
+  res.send({ call: callid });
 });
 
 app.get("/app/:key/:callid", (req, res) => {
