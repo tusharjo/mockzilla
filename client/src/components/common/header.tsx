@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link as ReachLink } from "@reach/router";
+import { StorageContext } from "./localStorageContext";
 import {
   Box,
   Heading,
@@ -11,7 +12,8 @@ import {
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const items = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
+  const { apiStore } = useContext(StorageContext);
+
   return (
     <Flex
       as="nav"
@@ -23,7 +25,7 @@ export const Header = () => {
       color="white"
       position="sticky"
       top={0}
-      zIndex={1}
+      zIndex={2}
     >
       <Flex align="center" mr={5}>
         <Heading as="h1" size="xl" position="relative" ml="10px">
@@ -32,7 +34,7 @@ export const Header = () => {
       </Flex>
 
       <Box>
-        {Object.keys(items).length > 0 && (
+        {Object.keys(apiStore).length > 0 && (
           <Box display={["none", "inline-flex"]}>
             <ReachLink to="/manage">
               <Button variantColor="pink">Manage My Mocks</Button>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import endpoint from "../config";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
+import { StorageContext } from "./common/localStorageContext";
 import { api } from "../api";
 import {
   Button,
@@ -13,8 +14,7 @@ import {
   Input,
   FormControl,
   FormLabel,
-  useToast,
-  Link
+  useToast
 } from "@chakra-ui/core";
 import SelectHttpStatusCode from "./dropdown-http"
 
@@ -27,21 +27,7 @@ export const Home = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
   const [fetchJSONinput, setFetchJSON] = useState("");
 
-  const [items, setItems] = useState(
-    JSON.parse(localStorage.getItem("mockmesecret") || "{}")
-  );
-  const mySessionKey = localStorage.getItem("mySessionKey") || "";
-
-  const getToken = () => {
-    if (!mySessionKey) {
-      const url = `${endpoint.APP_URL}/token`;
-      api(url, "GET").then((res: any) => {
-        localStorage.setItem("mySessionKey", res.token);
-      });
-    }
-  };
-
-  getToken();
+  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
 
   const fetchJSON = () => {
     if (fetchJSONinput) {
@@ -50,7 +36,7 @@ export const Home = (_: RouteComponentProps) => {
       const body = {
         fetchurl: fetchJSONinput,
       };
-      api(url, "POST", body).then((res: any) => {
+      api(url, "POST", body, mockmeSessionKey).then((res: any) => {
         let { call, json, status, error = "" } = res;
         setApiStatus(false);
         if (error) {
@@ -63,19 +49,16 @@ export const Home = (_: RouteComponentProps) => {
             isClosable: true,
           });
         } else {
-          let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-          localStorage.setItem(
-            "mockmesecret",
-            JSON.stringify({
-              ...oldItems,
-              [call]: { ...oldItems[call], httpStatus: status, json: JSON.stringify(json) },
-            })
+          setAPIStore(
+            {
+              ...apiStore,
+              [call]: { ...apiStore[call], httpStatus: status, json: JSON.stringify(json) },
+            }
           );
-          setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
           toast({
             position: "bottom-left",
             title: `API created with alias ${call}`,
-            description: <Link><ReachLink to="/manage">Click here to manage your calls</ReachLink></Link> as any,
+            description: <ReachLink to="/manage">Click here to manage your calls</ReachLink> as any,
             status: "success",
             duration: 8000,
             isClosable: true,
@@ -103,23 +86,20 @@ export const Home = (_: RouteComponentProps) => {
         jsondata,
         httpStatus
       };
-      api(url, "POST", body).then((res: any) => {
+      api(url, "POST", body, mockmeSessionKey).then((res: any) => {
         let { call, json } = res;
-        let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-        localStorage.setItem(
-          "mockmesecret",
-          JSON.stringify({
-            ...oldItems,
+        setAPIStore(
+          {
+            ...apiStore,
             [call]: { httpStatus, json },
-          })
+          }
         );
         setApiStatus(false);
-        setItems(JSON.parse(localStorage.getItem("mockmesecret") || "{}"));
         setJsonData("");
         toast({
           position: "bottom-left",
           title: `API created with alias ${call}`,
-          description: <Link><ReachLink to="/manage">Click here to manage your calls</ReachLink></Link> as any,
+          description: <ReachLink to="/manage">Click here to manage your calls</ReachLink> as any,
           status: "success",
           duration: 8000,
           isClosable: true,
@@ -154,7 +134,7 @@ export const Home = (_: RouteComponentProps) => {
         </Heading>
 
         <Box mt={10}>
-          {Object.keys(items).length > 0 && (
+          {Object.keys(apiStore).length > 0 && (
             <ReachLink to="/manage">
               <Button size="lg" variantColor="pink">
                 Manage My Mocks

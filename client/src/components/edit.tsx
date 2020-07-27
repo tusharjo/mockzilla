@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import endpoint from "../config";
 import { api } from "../api";
+import { StorageContext } from "./common/localStorageContext";
 import {
   Button,
   Box,
@@ -19,21 +20,19 @@ import {
 import ReactJson from "react-json-view";
 import { navigate, RouteComponentProps } from "@reach/router";
 
-const handleUpdate = (jsondata: "", appid: number, toast: any) => {
+const handleUpdate = (items: any, setItems: any, jsondata: "", appid: number, toast: any, mockmeSessionKey: string) => {
   const url = `${endpoint.APP_URL}/app-update`;
   const body = {
     jsondata,
     callid: appid,
   };
-  api(url, "POST", body).then((res: any) => {
+  api(url, "POST", body, mockmeSessionKey).then((res: any) => {
     let { call, json } = res;
-    let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-    localStorage.setItem(
-      "mockmesecret",
-      JSON.stringify({
-        ...oldItems,
-        [call]: { ...oldItems[call], json },
-      })
+    setItems(
+      {
+        ...items,
+        [call]: { ...items[call], json },
+      }
     );
   });
   toast({
@@ -47,22 +46,15 @@ const handleUpdate = (jsondata: "", appid: number, toast: any) => {
   navigate("/manage");
 };
 
-const handleDelete = (appid: number, toast: any) => {
+const handleDelete = (items: any, setItems: any, appid: number, toast: any, mockmeSessionKey: string) => {
   const url = `${endpoint.APP_URL}/app-delete`;
   const body = {
     callid: appid,
   };
-  api(url, "POST", body).then((res: any) => {
+  api(url, "POST", body, mockmeSessionKey).then((res: any) => {
     let { call } = res;
-    let oldItems = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-
-    delete oldItems[call];
-    localStorage.setItem(
-      "mockmesecret",
-      JSON.stringify({
-        ...oldItems,
-      })
-    );
+    delete items[call];
+    setItems({ ...items });
     toast({
       position: "bottom-left",
       title: "Deleted API",
@@ -71,7 +63,7 @@ const handleDelete = (appid: number, toast: any) => {
       duration: 2000,
       isClosable: true,
     });
-    navigate("/manage");
+    Object.keys(items).length > 0 ? navigate("/manage") : navigate("/");
   });
 };
 
@@ -81,15 +73,12 @@ type Props = {
 
 export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
   const [editMode, setEditMode] = useState(false);
-  const getLocalStorage = JSON.parse(
-    localStorage.getItem("mockmesecret") || "{}"
-  );
-  const mySessionKey = localStorage.getItem("mySessionKey") || "";
+  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
 
   const { colorMode } = useColorMode();
   const toast = useToast();
-  const [jsondata, setJsonData] = useState(getLocalStorage[appid].json || "");
-  const httpStatus = getLocalStorage[appid].httpStatus || "";
+  const [jsondata, setJsonData] = useState(apiStore[appid]?.json || "");
+  const httpStatus = apiStore[appid]?.httpStatus || "";
   function isJson(str: string) {
     try {
       JSON.parse(str);
@@ -99,9 +88,9 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
     return true;
   }
 
-  return (
+  return apiStore[appid] ?
     <Box>
-      <Box p={[4, 10]}>
+      < Box p={[4, 10]} >
         <Box
           p={[4, 10]}
           bg={`mode.${colorMode}.box`}
@@ -182,7 +171,7 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
                 variantColor="red"
                 aria-label="Call Segun"
                 icon="delete"
-                onClick={() => handleDelete(appid, toast)}
+                onClick={() => handleDelete(apiStore, setAPIStore, appid, toast, mockmeSessionKey)}
                 mr={5}
               />
             </Tooltip>
@@ -193,7 +182,7 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               label="Link to JSON mock"
             >
               <Link
-                href={`${endpoint.APP_URL}/app/${mySessionKey}/${appid}`}
+                href={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${appid}`}
                 isExternal
               >
                 <IconButton
@@ -208,13 +197,13 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               rightIcon="arrow-forward"
               mt={[4, 0]}
               variantColor="green"
-              onClick={() => handleUpdate(jsondata, appid, toast)}
+              onClick={() => handleUpdate(apiStore, setAPIStore, jsondata, appid, toast, mockmeSessionKey)}
             >
               Update JSON
             </Button>
           </form>
         </Box>
-      </Box>
-    </Box>
-  );
+      </Box >
+    </Box >
+    : null;
 };

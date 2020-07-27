@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
 import { Button, Box, Heading, useColorMode, Flex } from "@chakra-ui/core";
+import { StorageContext } from "./common/localStorageContext"
 
 export const NotFound = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
-
-  const items = JSON.parse(localStorage.getItem("mockmesecret") || "{}");
-
+  const { apiStore } = useContext(StorageContext);
   return (
     <Box>
       <Box
@@ -28,15 +27,15 @@ export const NotFound = (_: RouteComponentProps) => {
           <Heading color={`mode.${colorMode}.text`} mb={10}>
             Sorry, the page which you've been looking for does not exist!
           </Heading>
-          {Object.keys(items).length > 0 ? (
+          {Object.keys(apiStore).length > 0 ? (
             <ReachLink to="/manage">
               <Button variantColor="blue">Manage My Mocks</Button>
             </ReachLink>
           ) : (
-            <Button variantColor="blue">
-              <ReachLink to="/"> Create your first mock here!</ReachLink>
-            </Button>
-          )}
+              <Button variantColor="blue">
+                <ReachLink to="/"> Create your first mock here!</ReachLink>
+              </Button>
+            )}
         </Box>
       </Box>
     </Box>

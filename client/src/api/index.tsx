@@ -1,6 +1,4 @@
-export const api: any = (endpoint: string, callType: any, body = {}) => {
-  const mySessionKey = localStorage.getItem("mySessionKey");
-
+export const api: any = (endpoint: string, callType: any, body = {}, mockmeSessionKey: string) => {
   let bodyParams = {};
   let headers = {};
 
@@ -9,7 +7,7 @@ export const api: any = (endpoint: string, callType: any, body = {}) => {
       bodyParams = {};
       break;
     case "POST":
-      bodyParams = { key: mySessionKey, ...body };
+      bodyParams = { key: mockmeSessionKey, ...body };
       headers = {
         "Content-Type": "application/json",
       };
