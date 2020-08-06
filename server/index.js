@@ -7,6 +7,8 @@ const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 app.use(cors({ credentials: true, origin: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb" }));
 
 const host =
   process.env.dev === "development"
