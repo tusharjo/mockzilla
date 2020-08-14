@@ -8,6 +8,10 @@ wherever possible while development phase.
 ## MockME app url:
 [View the live MockME app](https://mockmeapp.herokuapp.com/)  
 
+## MockME architecture:
+
+![alt text](https://github.com/tusharjo/mockme/blob/master/client/public/image/mockme-architecture.jpg?raw=true)
+
 ## How to setup MockME locally:
 
 ### docker-compose (recommended):
