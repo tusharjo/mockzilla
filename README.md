@@ -5,6 +5,10 @@
 MockME is an app where you can host your own API calls and use those calls
 wherever possible.
 
+## MockME architecture:
+
+![alt text](https://github.com/tusharjo/mockme/blob/master/client/public/image/mockme-architecture.jpg?raw=true)
+
 ## How to setup MockME locally:
 
 ### docker-compose (recommended):
