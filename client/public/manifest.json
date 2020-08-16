@@ -5,6 +5,7 @@
   "display": "standalone",
   "background_color": "#fff",
   "description": "MockME - The fastest way to mock API calls.",
+  "theme_color": "#319795",
   "icons": [
     {
       "src": "icons/android-icon-36x36.png",
