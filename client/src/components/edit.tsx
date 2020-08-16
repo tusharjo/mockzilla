@@ -153,6 +153,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
                 } Mode`}
             >
               <Button
+                aria-label="Edit"
                 variantColor="teal"
                 rightIcon="edit"
                 onClick={() => setEditMode(!editMode)}
@@ -194,6 +195,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               </Link>
             </Tooltip>
             <Button
+              aria-label="Update JSON"
               rightIcon="arrow-forward"
               mt={[4, 0]}
               variantColor="green"

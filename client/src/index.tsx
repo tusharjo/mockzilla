@@ -1,10 +1,10 @@
+import { ColorModeProvider, CSSReset, ThemeProvider } from "@chakra-ui/core";
 import React from "react";
 import ReactDOM from "react-dom";
-import Main from "./main";
-import { ThemeProvider, CSSReset, ColorModeProvider } from "@chakra-ui/core";
-import customTheme from "./themes/themes";
-import "./core.css";
 import { StorageProvider } from "./components/common/localStorageContext";
+import Main from "./main";
+import * as serviceWorker from './serviceWorker';
+import customTheme from "./themes/themes";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,3 +19,4 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
+serviceWorker.register();

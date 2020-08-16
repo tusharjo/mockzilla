@@ -29,10 +29,10 @@ const NotFound = (_: RouteComponentProps) => {
           </Heading>
           {Object.keys(apiStore).length > 0 ? (
             <ReachLink to="/manage">
-              <Button variantColor="blue">Manage My Mocks</Button>
+              <Button aria-label="Manage Mocks" variantColor="blue">Manage My Mocks</Button>
             </ReachLink>
           ) : (
-              <Button variantColor="blue">
+              <Button aria-label="Create first mock" variantColor="blue">
                 <ReachLink to="/"> Create your first mock here!</ReachLink>
               </Button>
             )}
