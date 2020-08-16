@@ -71,7 +71,7 @@ type Props = {
   appid: number;
 };
 
-export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
+const Edit: RouteComponentProps & any = ({ appid }: Props) => {
   const [editMode, setEditMode] = useState(false);
   const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
 
@@ -207,3 +207,5 @@ export const Edit: RouteComponentProps & any = ({ appid }: Props) => {
     </Box >
     : null;
 };
+
+export default Edit;
