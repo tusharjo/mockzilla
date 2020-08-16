@@ -136,12 +136,12 @@ const Home = (_: RouteComponentProps) => {
         <Box mt={10}>
           {Object.keys(apiStore).length > 0 && (
             <ReachLink to="/manage">
-              <Button size="lg" variantColor="pink">
+              <Button aria-label="Manage My Mocks" size="lg" variantColor="pink">
                 Manage My Mocks
               </Button>
             </ReachLink>
           )}
-          <Button size="lg" variantColor="teal" mt={[5, 0]} ml={4}>
+          <Button aria-label="Find out more" size="lg" variantColor="teal" mt={[5, 0]} ml={4}>
             Find Out More!
           </Button>
         </Box>
@@ -163,17 +163,18 @@ const Home = (_: RouteComponentProps) => {
 
           <form>
             <FormControl mb={4}>
-              <FormLabel htmlFor="type" color={`mode.${colorMode}.text`}>
+              <FormLabel htmlFor="httpstatus" color={`mode.${colorMode}.text`}>
                 HTTP Status:
               </FormLabel>
               <SelectHttpStatusCode setHttpStatus={setHttpStatus} />
             </FormControl>
 
             <FormControl>
-              <FormLabel color={`mode.${colorMode}.text`}>
+              <FormLabel htmlFor="json" color={`mode.${colorMode}.text`}>
                 JSON Response Body:
               </FormLabel>
               <Textarea
+                id="json"
                 onChange={(e: any) => setJsonData(e.target.value)}
                 value={jsondata}
                 color={`mode.${colorMode}.text`}
@@ -181,6 +182,7 @@ const Home = (_: RouteComponentProps) => {
               ></Textarea>
             </FormControl>
             <Button
+              aria-label="Submit JSON"
               variantColor="teal"
               mt={4}
               type="button"
@@ -206,10 +208,11 @@ const Home = (_: RouteComponentProps) => {
             </Heading>
             <form>
               <FormControl>
-                <FormLabel color={`mode.${colorMode}.text`}>
+                <FormLabel htmlFor="fetchjson" color={`mode.${colorMode}.text`}>
                   Enter the URL:
                 </FormLabel>
                 <Input
+                  id="fetchjson"
                   onChange={(e: any) => setFetchJSON(e.target.value)}
                   color={`mode.${colorMode}.text`}
                   value={fetchJSONinput}

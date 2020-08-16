@@ -37,11 +37,11 @@ export const Header = () => {
         {Object.keys(apiStore).length > 0 && (
           <Box display={["none", "inline-flex"]}>
             <ReachLink to="/manage">
-              <Button variantColor="pink">Manage My Mocks</Button>
+              <Button aria-label="Manage Mocks" variantColor="pink">Manage My Mocks</Button>
             </ReachLink>
           </Box>
         )}
-        <Button onClick={toggleColorMode} bg="transparent">
+        <Button aria-label="Light/Dark mode" onClick={toggleColorMode} bg="transparent">
           <Icon
             name={colorMode === "light" ? "moon" : "sun"}
             size="32px"

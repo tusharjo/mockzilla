@@ -43,6 +43,7 @@ const SelectHttpStatusCode = ({
 
   return (
     <Select
+      inputId="httpstatus"
       options={status}
       defaultValue={defaultSelected || defaultValue}
       styles={customStyle(colorMode)}
