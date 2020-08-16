@@ -3,7 +3,7 @@ import { Link as ReachLink, RouteComponentProps } from "@reach/router";
 import { Button, Box, Heading, useColorMode, Flex } from "@chakra-ui/core";
 import { StorageContext } from "./common/localStorageContext"
 
-export const NotFound = (_: RouteComponentProps) => {
+const NotFound = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
   const { apiStore } = useContext(StorageContext);
   return (
@@ -41,3 +41,5 @@ export const NotFound = (_: RouteComponentProps) => {
     </Box>
   );
 };
+
+export default NotFound;

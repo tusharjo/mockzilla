@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/core";
 import SelectHttpStatusCode from "./dropdown-http"
 
-export const Home = (_: RouteComponentProps) => {
+const Home = (_: RouteComponentProps) => {
   const [httpStatus, setHttpStatus] = useState("200");
   const [apiStatus, setApiStatus] = useState(false);
   const toast = useToast();
@@ -233,3 +233,5 @@ export const Home = (_: RouteComponentProps) => {
     </Box>
   );
 };
+
+export default Home;

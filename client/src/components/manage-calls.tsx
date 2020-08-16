@@ -16,7 +16,7 @@ import {
   ButtonGroup,
 } from "@chakra-ui/core";
 
-export const ManageCalls = (_: RouteComponentProps) => {
+const ManageCalls = (_: RouteComponentProps) => {
   const [show, setShow] = useState(true);
   const { apiStore, mockmeSessionKey } = useContext(StorageContext);
   const { colorMode } = useColorMode();
@@ -134,3 +134,5 @@ export const ManageCalls = (_: RouteComponentProps) => {
     </Box>
   );
 };
+
+export default ManageCalls;
