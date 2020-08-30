@@ -14,7 +14,18 @@ import {
   Link,
   Icon,
   ButtonGroup,
+  useClipboard
 } from "@chakra-ui/core";
+
+const CopyToClipBoard = ({ copyValue }: { copyValue: string }) => {
+  const value = useState(copyValue);
+  const { onCopy, hasCopied } = useClipboard(value[0]);
+  return <>
+    <Button variantColor={hasCopied ? "teal" : "blue"} size="xs" onClick={onCopy}>
+      {hasCopied ? "Copied!" : <span><Icon name="copy" mr={1} />Copy URL</span>}
+    </Button>
+  </>
+}
 
 const ManageCalls = (_: RouteComponentProps) => {
   const [show, setShow] = useState(true);
@@ -63,12 +74,16 @@ const ManageCalls = (_: RouteComponentProps) => {
                     height="200"
                     key={index}
                   >
-                    <Heading as="h6" color={`mode.${colorMode}.text`}>
-                      <ReachLink to={`/edit/${call}`}>
-                        Edit: {call} <Icon name="edit" size="5" />
-                      </ReachLink>
-                    </Heading>
+                    <Flex alignItems="center" justifyContent="space-between">
+                      <Heading as="h6" color={`mode.${colorMode}.text`}>
+                        <ReachLink to={`/edit/${call}`}>
+                          Edit: {call} <Icon name="edit" size="5" />
+                        </ReachLink>
+                      </Heading>
+                      <CopyToClipBoard copyValue={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${call}`} />
+                    </Flex>
                     <Text mt={4} color={`mode.${colorMode}.text`}>
+                      <Text mb={2} fontSize="11px" fontWeight="300" letterSpacing="1px" color={`mode.${colorMode}.text`} textTransform="uppercase">Preview:</Text>
                       <span
                         style={{
                           display: "inline-block",
@@ -94,7 +109,7 @@ const ManageCalls = (_: RouteComponentProps) => {
                           href={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${call}`}
                           isExternal
                         >
-                          Call Link <Icon name="external-link" size="4" />
+                          Visit Call Link <Icon name="external-link" size="4" />
                         </Link>
                       </Text>
                     </Box>
