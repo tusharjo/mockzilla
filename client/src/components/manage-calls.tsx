@@ -80,7 +80,7 @@ const ManageCalls = (_: RouteComponentProps) => {
                           Edit: {call} <Icon name="edit" size="5" />
                         </ReachLink>
                       </Heading>
-                      <CopyToClipBoard copyValue={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${call}`} />
+                      <CopyToClipBoard copyValue={`${endpoint.COPY_URL}/app/${mockmeSessionKey}/${call}`} />
                     </Flex>
                     <Text mt={4} color={`mode.${colorMode}.text`}>
                       <Text mb={2} fontSize="11px" fontWeight="300" letterSpacing="1px" color={`mode.${colorMode}.text`} textTransform="uppercase">Preview:</Text>
