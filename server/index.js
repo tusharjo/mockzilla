@@ -97,23 +97,89 @@ app.post("/app-update", (req, res) => {
   let mySessionKey = req.body.key;
   let callid = req.body.callid;
   let formJSONObject = req.body.jsondata;
+  let newEndpoint = req.body.newEndpoint;
+  if (newEndpoint) {
+    client.hgetall("customEndpointsCollection", function (err, fetchedObject) {
+      client.hmset("customEndpointsCollection", {
+        ["endpoint-" + newEndpoint]: formJSONObject,
+      });
+    });
+  } else {
+    client.hgetall(mySessionKey, function (err, obj) {
+      client.hmset(mySessionKey, { ...obj, [callid]: formJSONObject });
+      if (err) {
+        console.error("Error in submitting call");
+      }
+    });
+  }
+  res.json({ call: callid, json: formJSONObject });
+});
 
-  client.hgetall(mySessionKey, function (err, obj) {
-    client.hmset(mySessionKey, { ...obj, [callid]: formJSONObject });
-    if (err) {
-      console.error("Error in submitting call");
+app.post("/change-endpoint", (req, res) => {
+  let mySessionKey = req.body.key;
+  let callid = req.body.callid;
+  let newEndpoint = req.body.newEndpoint;
+  let httpStatus = req.body.httpStatus;
+  let jsondata = req.body.jsondata;
+  let currentEndpoint = req.body.currentEndpoint;
+
+  client.hgetall("customEndpointsCollection", function (err, fetchedObject) {
+    if (!Object.keys(fetchedObject || {}).includes("endpoint-" + newEndpoint)) {
+      client.hmset("customEndpointsCollection", {
+        ["endpoint-" + newEndpoint]: jsondata,
+        ["httpStatus-" + newEndpoint]: httpStatus,
+      });
+      client.hdel("customEndpointsCollection", "endpoint-" + currentEndpoint);
+      client.hdel("customEndpointsCollection", "httpStatus-" + currentEndpoint);
+      client.hgetall(mySessionKey, function (err, obj) {
+        if (obj[callid]) {
+          client.hdel(mySessionKey, callid);
+          client.hdel(
+            mySessionKey,
+            mySessionKey + "-" + callid + "-httpStatus"
+          );
+        }
+      });
+      res.json({ call: callid, newEndpoint });
+    } else {
+      res.status(404).send({ error: "Sorry, Failed to update endpoint" });
     }
   });
-
-  res.json({ call: callid, json: formJSONObject });
 });
 
 app.post("/app-delete", (req, res) => {
   let mySessionKey = req.body.key;
   let callid = req.body.callid;
-  client.hdel(mySessionKey, callid);
-  client.hdel(mySessionKey, mySessionKey + "-" + callid + "-httpStatus");
+  let newEndpoint = req.body.newEndpoint;
+  if (newEndpoint) {
+    client.hdel("customEndpointsCollection", "endpoint-" + newEndpoint);
+    client.hdel("customEndpointsCollection", "httpStatus-" + newEndpoint);
+  } else {
+    client.hdel(mySessionKey, callid);
+    client.hdel(mySessionKey, mySessionKey + "-" + callid + "-httpStatus");
+  }
   res.send({ call: callid });
+});
+
+app.get("/custom/*", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  let endpoint = decodeURI(req.path.replace("/custom/", ""));
+  client.hget("customEndpointsCollection", "endpoint-" + endpoint, function (
+    err,
+    jsonObj
+  ) {
+    if (jsonObj) {
+      client.hget(
+        "customEndpointsCollection",
+        "httpStatus-" + endpoint,
+        function (err2, httpStatusCode) {
+          res.status(httpStatusCode).send(jsonObj);
+        }
+      );
+    } else {
+      res.status(404).send({ error: "No API call found!" });
+    }
+  });
 });
 
 app.get("/app/:key/:callid", (req, res) => {

@@ -161,7 +161,7 @@ const Home = (_: RouteComponentProps) => {
             Create your own JSON
           </Heading>
 
-          <form>
+          <form onSubmit={e => { e.preventDefault(); }}>
             <FormControl mb={4}>
               <FormLabel htmlFor="httpstatus" color={`mode.${colorMode}.text`}>
                 HTTP Status:
@@ -206,7 +206,7 @@ const Home = (_: RouteComponentProps) => {
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
               Create JSON from an external endpoint
             </Heading>
-            <form>
+            <form onSubmit={e => { e.preventDefault(); }}>
               <FormControl>
                 <FormLabel htmlFor="fetchjson" color={`mode.${colorMode}.text`}>
                   Enter the URL:

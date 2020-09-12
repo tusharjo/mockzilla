@@ -63,7 +63,7 @@ const ManageCalls = (_: RouteComponentProps) => {
                 templateColumns={["repeat(1, 1fr)", "repeat(4, 23%)"]}
                 gap={6}
               >
-                {Object.entries(apiStore).map(([call, { httpStatus, json }]: any, index) => (
+                {Object.entries(apiStore).map(([call, { httpStatus, json, newEndpoint }]: any, index) => (
                   <Box
                     p={5}
                     shadow="md"
@@ -80,7 +80,7 @@ const ManageCalls = (_: RouteComponentProps) => {
                           Edit: {call} <Icon name="edit" size="5" />
                         </ReachLink>
                       </Heading>
-                      <CopyToClipBoard copyValue={`${endpoint.COPY_URL}/app/${mockmeSessionKey}/${call}`} />
+                      <CopyToClipBoard copyValue={newEndpoint ? `${endpoint.COPY_URL}/custom/${newEndpoint}` : `${endpoint.COPY_URL}/app/${mockmeSessionKey}/${call}`} />
                     </Flex>
                     <Text mt={4} color={`mode.${colorMode}.text`}>
                       <Text mb={2} fontSize="11px" fontWeight="300" letterSpacing="1px" color={`mode.${colorMode}.text`} textTransform="uppercase">Preview:</Text>
@@ -106,7 +106,7 @@ const ManageCalls = (_: RouteComponentProps) => {
 
                       <Text color={`mode.${colorMode}.text`} fontSize="14px">
                         <Link
-                          href={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${call}`}
+                          href={newEndpoint ? `${endpoint.COPY_URL}/custom/${newEndpoint}` : `${endpoint.COPY_URL}/app/${mockmeSessionKey}/${call}`}
                           isExternal
                         >
                           Visit Call Link <Icon name="external-link" size="4" />

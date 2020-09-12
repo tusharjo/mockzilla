@@ -15,23 +15,41 @@ import {
   Link,
   Tooltip,
   Flex,
-  Icon
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  InputRightElement
 } from "@chakra-ui/core";
 import ReactJson from "react-json-view";
 import { navigate, RouteComponentProps } from "@reach/router";
 
-const handleUpdate = (items: any, setItems: any, jsondata: "", appid: number, toast: any, mockmeSessionKey: string) => {
+type commonPayloadProps = {
+  apiStore?: any,
+  setAPIStore?: any,
+  appid?: number,
+  toast?: any,
+  mockmeSessionKey?: string,
+  httpStatus?: number,
+  jsondata?: any,
+  newEndpoint?: string,
+  currentEndpoint?: string,
+  setcurrentEndpoint?: any
+};
+
+const handleUpdate = ({ apiStore, setAPIStore, jsondata, appid, toast, mockmeSessionKey, newEndpoint }: commonPayloadProps) => {
   const url = `${endpoint.APP_URL}/app-update`;
   const body = {
     jsondata,
     callid: appid,
+    newEndpoint
   };
   api(url, "POST", body, mockmeSessionKey).then((res: any) => {
     let { call, json } = res;
-    setItems(
+    setAPIStore(
       {
-        ...items,
-        [call]: { ...items[call], json },
+        ...apiStore,
+        [call]: { ...apiStore[call], json },
       }
     );
   });
@@ -46,15 +64,16 @@ const handleUpdate = (items: any, setItems: any, jsondata: "", appid: number, to
   navigate("/manage");
 };
 
-const handleDelete = (items: any, setItems: any, appid: number, toast: any, mockmeSessionKey: string) => {
+const handleDelete = ({ apiStore, setAPIStore, appid, toast, mockmeSessionKey, newEndpoint }: commonPayloadProps) => {
   const url = `${endpoint.APP_URL}/app-delete`;
   const body = {
     callid: appid,
+    newEndpoint
   };
   api(url, "POST", body, mockmeSessionKey).then((res: any) => {
     let { call } = res;
-    delete items[call];
-    setItems({ ...items });
+    delete apiStore[call];
+    setAPIStore({ ...apiStore });
     toast({
       position: "bottom-left",
       title: "Deleted API",
@@ -63,7 +82,7 @@ const handleDelete = (items: any, setItems: any, appid: number, toast: any, mock
       duration: 2000,
       isClosable: true,
     });
-    Object.keys(items).length > 0 ? navigate("/manage") : navigate("/");
+    Object.keys(apiStore).length > 0 ? navigate("/manage") : navigate("/");
   });
 };
 
@@ -71,9 +90,53 @@ type Props = {
   appid: number;
 };
 
+const handleChangeEndpoint = ({ apiStore, setAPIStore, appid, toast, mockmeSessionKey, newEndpoint, httpStatus, jsondata, currentEndpoint, setcurrentEndpoint }: commonPayloadProps) => {
+  const url = `${endpoint.APP_URL}/change-endpoint`;
+  const body = {
+    callid: appid,
+    newEndpoint,
+    httpStatus,
+    jsondata,
+    currentEndpoint
+  };
+
+  api(url, "POST", body, mockmeSessionKey).then((res: any) => {
+    if (res?.error) {
+      toast({
+        position: "bottom-left",
+        title: "Failed to update Endpoint",
+        description: "Please try again with another endpoint.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+    else {
+      let { call, newEndpoint } = res;
+      setAPIStore(
+        {
+          ...apiStore,
+          [call]: { ...apiStore[call], newEndpoint },
+        }
+      );
+      setcurrentEndpoint(newEndpoint);
+      toast({
+        position: "bottom-left",
+        title: "Updated Endpoint",
+        description: "Endpoint has been updated successfully",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  });
+}
+
 const Edit: RouteComponentProps & any = ({ appid }: Props) => {
   const [editMode, setEditMode] = useState(false);
   const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
+  const [currentEndpoint, setcurrentEndpoint] = useState(apiStore[appid]?.newEndpoint ?? "");
+  const [newEndpoint, setnewEndpoint] = useState(apiStore[appid]?.newEndpoint ?? "");
 
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -88,6 +151,18 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
     return true;
   }
 
+  let commonPayload = {
+    apiStore,
+    setAPIStore,
+    appid,
+    toast,
+    mockmeSessionKey,
+    httpStatus,
+    jsondata,
+    newEndpoint,
+    currentEndpoint,
+    setcurrentEndpoint
+  };
   return apiStore[appid] ?
     <Box>
       < Box p={[4, 10]} >
@@ -102,11 +177,26 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
         >
           <Heading mb={5} as="h1">
             <Text color={`mode.${colorMode}.text`} fontWeight="400">
-              Edit JSON response of {appid}:
+              Edit JSON response of {currentEndpoint || appid}:
             </Text>
           </Heading>
 
-          <form>
+          <form onSubmit={e => { e.preventDefault(); }}>
+            <FormControl mb={4} as={Flex} alignItems="center">
+              <Icon name="edit" size="16px" color={`mode.${colorMode}.text`} mr={2} />
+              <Text fontSize="16px" color={`mode.${colorMode}.text`} mr={2}>Edit endpoint:</Text>
+            </FormControl>
+
+            <InputGroup mb={6}>
+              <InputLeftAddon color={`mode.${colorMode}.text`} children={`${endpoint.APP_URL}${newEndpoint ? "/custom/" : "/app/"}`} />
+              <Input roundedTopLeft="0" roundedBottomLeft="0" type="text" color={`mode.${colorMode}.text`} defaultValue={newEndpoint || `${mockmeSessionKey}/${appid}`} onChange={(e: any) => setnewEndpoint(e.target.value)}></Input>
+              <InputRightElement width="13rem">
+                <Button h="1.75rem" size="sm" variantColor="teal" onClick={() => handleChangeEndpoint(commonPayload)}>
+                  Change Endpoint URL
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+
             <FormControl mb={4} as={Flex} alignItems="center">
               <Icon name="info" size="16px" color="green.400" mr={2} />
               <Text fontSize="16px" color={`mode.${colorMode}.text`} mr={2}>HTTP Status:</Text>
@@ -172,7 +262,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
                 variantColor="red"
                 aria-label="Call Segun"
                 icon="delete"
-                onClick={() => handleDelete(apiStore, setAPIStore, appid, toast, mockmeSessionKey)}
+                onClick={() => handleDelete(commonPayload)}
                 mr={5}
               />
             </Tooltip>
@@ -183,7 +273,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               label="Link to JSON mock"
             >
               <Link
-                href={`${endpoint.APP_URL}/app/${mockmeSessionKey}/${appid}`}
+                href={`${endpoint.APP_URL}${currentEndpoint ? `/custom/${currentEndpoint}` : `/app/${mockmeSessionKey}/${appid}`}`}
                 isExternal
               >
                 <IconButton
@@ -199,7 +289,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               rightIcon="arrow-forward"
               mt={[4, 0]}
               variantColor="green"
-              onClick={() => handleUpdate(apiStore, setAPIStore, jsondata, appid, toast, mockmeSessionKey)}
+              onClick={() => handleUpdate(commonPayload)}
             >
               Update JSON
             </Button>
