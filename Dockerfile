@@ -11,7 +11,7 @@ RUN rm -rf /app/client
 WORKDIR /app
 COPY server/package*.json ./
 RUN npm ci
-COPY server/index.js ./server/
+COPY server ./server/
 
 EXPOSE 8080
 CMD [ "node", "server/index.js" ]
