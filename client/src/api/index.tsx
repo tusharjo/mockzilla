@@ -1,32 +1,38 @@
-export const api: any = (endpoint: string, callType: any, body = {}, mockmeSessionKey: string) => {
+type APIClient = {
+  <T = any>(
+    endpoint: string,
+    method: string,
+    body?: any,
+    mockmeSessionKey?: string
+  ): Promise<T>;
+};
+export const api: APIClient = async (
+  endpoint,
+  method,
+  body = {},
+  mockmeSessionKey
+) => {
   let bodyParams = {};
   let headers = {};
 
-  switch (callType) {
-    case "GET":
-      bodyParams = {};
-      break;
+  switch (method) {
     case "POST":
       bodyParams = { key: mockmeSessionKey, ...body };
-      headers = {
-        "Content-Type": "application/json",
-      };
+      headers = { "Content-Type": "application/json" };
       break;
-    default:
-      return null;
   }
 
-  const payload: any = {
-    method: callType,
-  };
+  const payload: RequestInit = { method };
 
-  if (callType === "POST") {
-    payload.body = JSON.stringify({ ...bodyParams });
+  if (method === "POST") {
+    payload.body = JSON.stringify(bodyParams);
     payload.headers = headers;
   }
 
-  return fetch(endpoint, payload)
-    .then((res) => res.json())
-    .then((res) => res)
-    .catch((e) => new Error("Error while calling API."));
+  try {
+    const response = await fetch(endpoint, payload);
+    return await response.json();
+  } catch (e) {
+    return new Error("Error while calling API.");
+  }
 };

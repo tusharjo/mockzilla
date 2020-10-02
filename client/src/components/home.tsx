@@ -14,9 +14,15 @@ import {
   Input,
   FormControl,
   FormLabel,
-  useToast
+  useToast,
 } from "@chakra-ui/core";
-import SelectHttpStatusCode from "./dropdown-http"
+import SelectHttpStatusCode from "./dropdown-http";
+
+type MockCallResponse = {
+  call: string;
+  json: { [x: string]: any };
+  error: string;
+};
 
 const Home = (_: RouteComponentProps) => {
   const [httpStatus, setHttpStatus] = useState("200");
@@ -27,7 +33,9 @@ const Home = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
   const [fetchJSONinput, setFetchJSON] = useState("");
 
-  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
+  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(
+    StorageContext
+  );
 
   const fetchJSON = () => {
     if (fetchJSONinput) {
@@ -36,8 +44,8 @@ const Home = (_: RouteComponentProps) => {
       const body = {
         fetchurl: fetchJSONinput,
       };
-      api(url, "POST", body, mockmeSessionKey).then((res: any) => {
-        let { call, json, status, error = "" } = res;
+      api<MockCallResponse>(url, "POST", body, mockmeSessionKey).then((res) => {
+        let { call, json, error = "" } = res;
         setApiStatus(false);
         if (error) {
           toast({
@@ -49,16 +57,22 @@ const Home = (_: RouteComponentProps) => {
             isClosable: true,
           });
         } else {
-          setAPIStore(
-            {
-              ...apiStore,
-              [call]: { ...apiStore[call], httpStatus: status, json: JSON.stringify(json) },
-            }
-          );
+          setAPIStore({
+            ...apiStore,
+            [call]: {
+              ...apiStore[call],
+              httpStatus: status,
+              json: JSON.stringify(json),
+            },
+          });
           toast({
             position: "bottom-left",
             title: `API created with alias ${call}`,
-            description: <ReachLink to="/manage">Click here to manage your calls</ReachLink> as any,
+            description: (
+              <ReachLink to="/manage">
+                Click here to manage your calls
+              </ReachLink>
+            ) as any,
             status: "success",
             duration: 8000,
             isClosable: true,
@@ -84,22 +98,22 @@ const Home = (_: RouteComponentProps) => {
       const url = `${endpoint.APP_URL}/app-submit`;
       const body = {
         jsondata,
-        httpStatus
+        httpStatus,
       };
       api(url, "POST", body, mockmeSessionKey).then((res: any) => {
         let { call, json } = res;
-        setAPIStore(
-          {
-            ...apiStore,
-            [call]: { httpStatus, json },
-          }
-        );
+        setAPIStore({
+          ...apiStore,
+          [call]: { httpStatus, json },
+        });
         setApiStatus(false);
         setJsonData("");
         toast({
           position: "bottom-left",
           title: `API created with alias ${call}`,
-          description: <ReachLink to="/manage">Click here to manage your calls</ReachLink> as any,
+          description: (
+            <ReachLink to="/manage">Click here to manage your calls</ReachLink>
+          ) as any,
           status: "success",
           duration: 8000,
           isClosable: true,
@@ -136,12 +150,22 @@ const Home = (_: RouteComponentProps) => {
         <Box mt={10}>
           {Object.keys(apiStore).length > 0 && (
             <ReachLink to="/manage">
-              <Button aria-label="Manage My Mocks" size="lg" variantColor="pink">
+              <Button
+                aria-label="Manage My Mocks"
+                size="lg"
+                variantColor="pink"
+              >
                 Manage My Mocks
               </Button>
             </ReachLink>
           )}
-          <Button aria-label="Find out more" size="lg" variantColor="teal" mt={[5, 0]} ml={4}>
+          <Button
+            aria-label="Find out more"
+            size="lg"
+            variantColor="teal"
+            mt={[5, 0]}
+            ml={4}
+          >
             Find Out More!
           </Button>
         </Box>
@@ -161,7 +185,11 @@ const Home = (_: RouteComponentProps) => {
             Create your own JSON
           </Heading>
 
-          <form onSubmit={e => { e.preventDefault(); }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
             <FormControl mb={4}>
               <FormLabel htmlFor="httpstatus" color={`mode.${colorMode}.text`}>
                 HTTP Status:
@@ -206,7 +234,11 @@ const Home = (_: RouteComponentProps) => {
             <Heading as="h3" mb={4} color={`mode.${colorMode}.text`}>
               Create JSON from an external endpoint
             </Heading>
-            <form onSubmit={e => { e.preventDefault(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <FormControl>
                 <FormLabel htmlFor="fetchjson" color={`mode.${colorMode}.text`}>
                   Enter the URL:

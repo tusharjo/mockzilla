@@ -6,15 +6,18 @@ export const appConstants = {
   SESSION_KEY: "mockme-session-key"
 };
 
-export const getToken = (setSessionKey: any) => {
-  const url = `${endpoint.APP_URL}/token`;
-  api(url, "GET").then((res: any) => {
-    localStorage.setItem(appConstants.SESSION_KEY, res.token); setSessionKey(res.token);
-  });
-};
+type TokenResponse = { token: string };
 
-export const mockmeAPIStore = JSON.parse(localStorage.getItem(appConstants.API_STORAGE) as any);
-export const mockmeSessionKey = localStorage.getItem(appConstants.SESSION_KEY) || "";
+export const getToken = () =>
+  api<TokenResponse>(`${endpoint.APP_URL}/token`, "GET").then(
+    (res) => res.token
+  );
+
+export const mockmeAPIStore = JSON.parse(
+  localStorage.getItem(appConstants.API_STORAGE) as any
+);
+export const mockmeSessionKey =
+  localStorage.getItem(appConstants.SESSION_KEY) || "";
 
 export let reducer = (info: any, newInfo: any) => {
   if (newInfo === null) {

@@ -37,7 +37,7 @@ export const Header = () => {
         {Object.keys(apiStore).length > 0 && (
           <Box display={["none", "inline-flex"]}>
             <ReachLink to="/manage">
-              <Button aria-label="Manage Mocks" variantColor="pink">Manage My Mocks</Button>
+              <Button variantColor="pink">Manage My Mocks</Button>
             </ReachLink>
           </Box>
         )}

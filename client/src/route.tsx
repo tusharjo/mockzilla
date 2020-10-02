@@ -10,20 +10,24 @@ const HowToUse = React.lazy(() => import("./components/how-to-use"));
 export default function Route() {
   return (
     <Box minH={`calc(100vh - 144px)`}>
-      <Suspense fallback={
-        <Flex
-          width="100%"
-          minHeight="calc(100vh - 170px)"
-          alignItems="center"
-          justifyContent="center">
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="teal.500"
-            size="xl"
-          />
-        </Flex>}>
+      <Suspense
+        fallback={
+          <Flex
+            width="100%"
+            minHeight="calc(100vh - 170px)"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="teal.500"
+              size="xl"
+            />
+          </Flex>
+        }
+      >
         <Router>
           <Home path={"/"} />
           <ManageCalls path="/manage" />
