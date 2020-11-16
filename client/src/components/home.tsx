@@ -21,6 +21,7 @@ import SelectHttpStatusCode from "./dropdown-http";
 type MockCallResponse = {
   call: string;
   json: { [x: string]: any };
+  status: number;
   error: string;
 };
 
@@ -45,7 +46,7 @@ const Home = (_: RouteComponentProps) => {
         fetchurl: fetchJSONinput,
       };
       api<MockCallResponse>(url, "POST", body, mockmeSessionKey).then((res) => {
-        let { call, json, error = "" } = res;
+        let { call, json, status, error = "" } = res;
         setApiStatus(false);
         if (error) {
           toast({
