@@ -1,55 +1,54 @@
-import React from 'react';
-import Select from 'react-select';
+import React from "react";
+import Select from "react-select";
 import { useColorMode } from "@chakra-ui/core";
-import { defaultValue, status } from './model';
+import { defaultValue, status, StatusOption } from "./model";
 
-const formatOptionLabel = (data: any) => {
-  return (
-    <span>
-      <span>{data.value}</span> - {data.label}
-    </span>
-  );
-};
+const formatOptionLabel = (data: StatusOption) => (
+  <span>
+    <span>{data.value}</span> - {data.label}
+  </span>
+);
 
 const customStyle = (colorMode: string) => {
   return {
     option: (base: any) => ({
       ...base,
-      padding: "10px"
+      padding: "10px",
     }),
     singleValue: (base: any) => ({
       ...base,
-      color: colorMode === "light" ? "#333" : "#fff"
+      color: colorMode === "light" ? "#333" : "#fff",
     }),
     control: (base: any) => ({
       ...base,
       color: "red",
-      backgroundColor: colorMode === "light" ? "#fff" : "rgba(255,255,255,0.06)",
+      backgroundColor:
+        colorMode === "light" ? "#fff" : "rgba(255,255,255,0.06)",
       borderColor: colorMode === "light" ? null : "rgba(255,255,255,0.04)",
-      padding: "4px 7px"
+      padding: "4px 7px",
     }),
     input: (base: any) => ({
       ...base,
-      color: colorMode === "light" ? "#333" : "#fff"
-    })
-  }
-}
+      color: colorMode === "light" ? "#333" : "#fff",
+    }),
+  };
+};
 
+type SelectHttpStatusCodeProps = {
+  setHttpStatus: React.Dispatch<React.SetStateAction<string>>;
+};
 
-const SelectHttpStatusCode = ({
-  setHttpStatus, defaultSelected
-}: { setHttpStatus: any; defaultSelected?: any }) => {
+const SelectHttpStatusCode = (props: SelectHttpStatusCodeProps) => {
   const { colorMode } = useColorMode();
 
   return (
     <Select
       inputId="httpstatus"
       options={status}
-      defaultValue={defaultSelected || defaultValue}
+      defaultValue={defaultValue}
       styles={customStyle(colorMode)}
       formatOptionLabel={formatOptionLabel}
-      value={(status ? status.find((option) => option.value) : '') as any}
-      onChange={code => setHttpStatus(code.value)}
+      onChange={(code) => props.setHttpStatus((code as StatusOption).value)}
       maxMenuHeight={200}
     />
   );

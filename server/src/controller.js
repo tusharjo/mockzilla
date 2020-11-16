@@ -100,7 +100,7 @@ exports.changeEndpoint = function (req, res) {
       client.hdel("customEndpointsCollection", "endpoint-" + currentEndpoint);
       client.hdel("customEndpointsCollection", "httpStatus-" + currentEndpoint);
       client.hgetall(mySessionKey, function (err, obj) {
-        if (obj[callid]) {
+        if (obj && obj[callid]) {
           client.hdel(mySessionKey, callid);
           client.hdel(
             mySessionKey,

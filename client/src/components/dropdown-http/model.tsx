@@ -6,11 +6,9 @@ export type StatusOption = {
   highlight?: boolean;
 }
 
-type StatusGroupedOptions = GroupedOptionsType<StatusOption>;
-
 export const defaultValue: StatusOption = { value: '200', label: 'OK', highlight: true };
 
-export const status: StatusGroupedOptions = [
+export const status: GroupedOptionsType<StatusOption> = [
   {
     label: '1xx Informational response',
     options: [
