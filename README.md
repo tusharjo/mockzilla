@@ -21,6 +21,8 @@ Go to /client directory create a new `.env.development` file and add this code
 
 ### `REACT_APP_API_URI=http://localhost:8080`
 
+Then run this in your terminal:
+
 #### `docker-compose up -d --build`
 
 Once all containers bootup: You can access client from `http://localhost:3001`
