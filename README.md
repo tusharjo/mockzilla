@@ -2,11 +2,12 @@
 
 ## What is MockME?
 
-MockME is an app where you can mock and store your own API calls and use those calls
-wherever possible while development phase.
+MockME is an app where you can mock and store your own API calls and use those
+calls wherever possible while development phase.
 
 ## MockME app url:
-[View the live MockME app](https://mockme.site/)  
+
+[View the live MockME app](https://mockme.site/)
 
 ## MockME architecture:
 
@@ -15,6 +16,10 @@ wherever possible while development phase.
 ## How to setup MockME locally:
 
 ### docker-compose (recommended):
+
+Go to /client directory create a new `.env.development` file and add this code
+
+### `REACT_APP_API_URI=http://localhost:8080`
 
 #### `docker-compose up -d --build`
 
