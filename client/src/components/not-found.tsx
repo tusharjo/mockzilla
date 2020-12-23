@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
 import { Button, Box, Heading, useColorMode, Flex } from "@chakra-ui/core";
-import { StorageContext } from "./common/localStorageContext"
+import { useStorage } from "./common/localStorageContext"
 
 const NotFound = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
-  const { apiStore } = useContext(StorageContext);
+  const { apiStore } = useStorage();
   return (
     <Box>
       <Box

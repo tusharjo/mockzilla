@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useContext } from "react";
 import {
   reducer,
   mockmeAPIStore,
@@ -15,7 +15,12 @@ type ContextProps = {
 
 const StorageContext = React.createContext({} as ContextProps);
 
-function StorageProvider(props: any) {
+export const useStorage = () => {
+  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
+  return { apiStore, mockmeSessionKey, setAPIStore };
+}
+
+export function StorageProvider(props: any) {
   const [apiStore, setAPIStore] = useReducer(
     reducer,
     mockmeAPIStore || ({} as any)
@@ -32,7 +37,7 @@ function StorageProvider(props: any) {
   useEffect(() => {
     localStorage.setItem(appConstants.API_STORAGE, JSON.stringify(apiStore));
   }, [apiStore]);
-  useEffect(() => {}, [sessionKey]);
+  useEffect(() => { }, [sessionKey]);
 
   if (!sessionKey) {
     return null;
@@ -45,5 +50,3 @@ function StorageProvider(props: any) {
     </StorageContext.Provider>
   );
 }
-
-export { StorageContext, StorageProvider };

@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import endpoint from "../config";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
-import { StorageContext } from "./common/localStorageContext";
+import { useStorage } from "./common/localStorageContext";
 import { api } from "../api";
 import {
   Button,
@@ -34,9 +34,7 @@ const Home = (_: RouteComponentProps) => {
   const { colorMode } = useColorMode();
   const [fetchJSONinput, setFetchJSON] = useState("");
 
-  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(
-    StorageContext
-  );
+  const { apiStore, mockmeSessionKey, setAPIStore } = useStorage();
 
   const fetchJSON = () => {
     if (fetchJSONinput) {

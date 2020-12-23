@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import endpoint from "../config";
 import { api } from "../api";
-import { StorageContext } from "./common/localStorageContext";
+import { useStorage } from "./common/localStorageContext";
 import {
   Button,
   Box,
@@ -134,7 +134,7 @@ const handleChangeEndpoint = ({ apiStore, setAPIStore, appid, toast, mockmeSessi
 
 const Edit: RouteComponentProps & any = ({ appid }: Props) => {
   const [editMode, setEditMode] = useState(false);
-  const { apiStore, mockmeSessionKey, setAPIStore } = useContext(StorageContext);
+  const { apiStore, mockmeSessionKey, setAPIStore } = useStorage();
   const [currentEndpoint, setcurrentEndpoint] = useState(apiStore[appid]?.newEndpoint ?? "");
   const [newEndpoint, setnewEndpoint] = useState(apiStore[appid]?.newEndpoint ?? "");
 
@@ -238,9 +238,7 @@ const Edit: RouteComponentProps & any = ({ appid }: Props) => {
               aria-label="Mode"
               placement="bottom"
               hasArrow
-              label={`Edit JSON in ${
-                editMode && isJson(jsondata) ? "Normal" : "Tree"
-                } Mode`}
+              label={`Edit JSON in ${editMode && isJson(jsondata) ? "Normal" : "Tree"} Mode`}
             >
               <Button
                 aria-label="Edit"

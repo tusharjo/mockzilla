@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import endpoint from "../config";
 import { Link as ReachLink, RouteComponentProps } from "@reach/router";
-import { StorageContext } from "./common/localStorageContext";
+import { useStorage } from "./common/localStorageContext";
 import {
   Button,
   Box,
@@ -29,7 +29,7 @@ const CopyToClipBoard = ({ copyValue }: { copyValue: string }) => {
 
 const ManageCalls = (_: RouteComponentProps) => {
   const [show, setShow] = useState(true);
-  const { apiStore, mockmeSessionKey } = useContext(StorageContext);
+  const { apiStore, mockmeSessionKey } = useStorage();
   const { colorMode } = useColorMode();
   return (
     <Box>

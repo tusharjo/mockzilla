@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link as ReachLink } from "@reach/router";
-import { StorageContext } from "./localStorageContext";
+import { useStorage } from "./localStorageContext";
 import {
   Box,
   Heading,
@@ -12,7 +12,7 @@ import {
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { apiStore } = useContext(StorageContext);
+  const { apiStore } = useStorage();
 
   return (
     <Flex
