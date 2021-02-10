@@ -18,7 +18,7 @@ const {
 } = require("./src/controller");
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../build")));
 
 app.post("/app-fetch", fetchJSONFromEndpoint);
