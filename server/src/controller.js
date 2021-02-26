@@ -1,6 +1,7 @@
 const fetch = require("node-fetch");
 const { v4: uuidv4 } = require("uuid");
 const client = require("./redis-client");
+const { addQueryParamsToUrl } = require("./utils");
 
 exports.fetchJSONFromEndpoint = function (req, res) {
   let url = req.body.fetchurl;
@@ -104,7 +105,7 @@ exports.changeEndpoint = function (req, res) {
           client.hdel(mySessionKey, callid);
           client.hdel(
             mySessionKey,
-            mySessionKey + "-" + callid + "-httpStatus"
+            mySessionKey + "-" + callid + "-httpStatus",
           );
         }
       });
@@ -131,23 +132,26 @@ exports.deleteAPI = function (req, res) {
 
 exports.customEndpoints = function (req, res) {
   res.setHeader("Content-Type", "application/json");
-  let endpoint = decodeURI(req.path.replace("/custom/", ""));
-  client.hget("customEndpointsCollection", "endpoint-" + endpoint, function (
-    err,
-    jsonObj
-  ) {
-    if (jsonObj) {
-      client.hget(
-        "customEndpointsCollection",
-        "httpStatus-" + endpoint,
-        function (err2, httpStatusCode) {
-          res.status(httpStatusCode).send(jsonObj);
-        }
-      );
-    } else {
-      res.status(404).send({ error: "No API call found!" });
-    }
-  });
+  let endpoint = decodeURI(
+    addQueryParamsToUrl(req.path, req.query).replace("/custom/", ""),
+  );
+  client.hget(
+    "customEndpointsCollection",
+    "endpoint-" + endpoint,
+    function (err, jsonObj) {
+      if (jsonObj) {
+        client.hget(
+          "customEndpointsCollection",
+          "httpStatus-" + endpoint,
+          function (err2, httpStatusCode) {
+            res.status(httpStatusCode).send(jsonObj);
+          },
+        );
+      } else {
+        res.status(404).send({ error: "No API call found!" });
+      }
+    },
+  );
 };
 
 exports.showJSONCall = function (req, res) {
@@ -168,7 +172,7 @@ exports.showJSONCall = function (req, res) {
         } catch (e) {
           res.status(404).send({ error: "No API call found!" });
         }
-      }
+      },
     );
   });
 };
