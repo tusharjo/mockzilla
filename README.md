@@ -7,7 +7,7 @@ calls wherever possible while development phase.
 
 ## MockME app url:
 
-[View the live MockME app](https://mockme.site/)
+[View the live MockME app](https://mockme.in/)
 
 ## MockME architecture:
 
