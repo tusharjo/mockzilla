@@ -1,19 +1,19 @@
-# MockME v1.0
+# MockZilla v1.1
 
-## What is MockME?
+## What is MockZilla?
 
-MockME is an app where you can mock and store your own API calls and use those
+MockZilla is an app where you can mock and store your own API calls and use those
 calls wherever possible while development phase.
 
-## MockME app url:
+## MockZilla app url:
 
-[View the live MockME app](https://mockme.in/)
+[View the live MockZilla app](https://mockzilla.com/)
 
-## MockME architecture:
+## MockZilla architecture:
 
-![alt text](https://github.com/tusharjo/mockme/blob/master/client/public/image/mockme-architecture.jpg?raw=true)
+![alt text](https://github.com/tusharjo/mockzilla/blob/master/client/public/image/mockme-architecture.jpg?raw=true)
 
-## How to setup MockME locally:
+## How to setup MockZilla locally:
 
 ### docker-compose (recommended):
 
@@ -70,7 +70,7 @@ Once it connects to redis server, you can visit port 8080:
 
 Your server with react app is up and running on localhost!
 
-## Production deployment of MockME:
+## Production deployment of MockZilla:
 
 Run root Dockerfile, it will output image.
 
